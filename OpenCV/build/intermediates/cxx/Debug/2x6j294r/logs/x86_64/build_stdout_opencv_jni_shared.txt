@@ -1,0 +1,2 @@
+ninja: Entering directory `E:\workspace\sangsang-all\OpenCV\.cxx\Debug\2x6j294r\x86_64'
+ninja: no work to do.

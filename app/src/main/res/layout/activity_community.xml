@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- Back Button and Title -->
+    <TextView
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Back"
+        android:textColor="#BAA681"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/community_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="커뮤니티 내역"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#BAA681"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/back_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.37"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Written Posts Section -->
+    <TextView
+        android:id="@+id/written_posts_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="작성한 게시글"
+        android:textSize="18sp"
+        android:textColor="#BAA681"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/community_title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- 작성한 게시글 리스트 -->
+    <LinearLayout
+        android:id="@+id/writtenPostList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/written_posts_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Liked Posts Section -->
+    <TextView
+        android:id="@+id/liked_posts_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="공감한 게시글"
+        android:textSize="18sp"
+        android:textColor="#BAA681"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/writtenCommentList"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- 공감한 게시글 리스트 -->
+    <LinearLayout
+        android:id="@+id/likedPostList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/liked_posts_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="8dp" />
+
+    <!-- Participating Chat Rooms Section -->
+    <TextView
+        android:id="@+id/participating_chatrooms_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="참여하는 채팅방"
+        android:textSize="18sp"
+        android:textColor="#BAA681"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/likedPostList"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- 참여하는 채팅방 리스트 -->
+    <LinearLayout
+        android:id="@+id/chatroomList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/participating_chatrooms_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <!-- Written Comments Section -->
+    <TextView
+        android:id="@+id/written_comments_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="작성한 댓글"
+        android:textSize="18sp"
+        android:textColor="#BAA681"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/writtenPostList"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/writtenCommentList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/written_comments_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Individual Comment Item Layout -->
+        <!-- Each comment item structure will be added dynamically through Java code -->
+    </LinearLayout>
+
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/materialToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:background="#BAA681"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/check"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/check"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/chat"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/home"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="54dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/check"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/chat"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/chat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mypage"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/mypage"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/mypage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

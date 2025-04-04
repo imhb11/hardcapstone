@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/materialToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:background="#BAA681"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageButton
+        android:id="@+id/check"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/check"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/chat"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/home"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="54dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/check"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/chat"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/chat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mypage"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/mypage"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/mypage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="320dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="76dp"
+        android:background="@drawable/search1"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintHorizontal_bias="0.117"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/categorybutton"
+        android:layout_width="104dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/meeting_category"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.058"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gathering_category"
+        android:layout_width="378dp"
+        android:layout_height="278dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="10dp"
+        app:columnCount="3"
+        app:layout_constraintBottom_toTopOf="@+id/textView13"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.781"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categorybutton"
+        app:layout_constraintVertical_bias="0.062"
+        app:rowCount="2">
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="113dp"
+            android:layout_height="138dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/meeting_category_exercise"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="159dp" />
+
+        <ImageButton
+            android:id="@+id/imageButton3"
+            android:layout_width="113dp"
+            android:layout_height="138dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/meeting_category_chinmok"
+            app:layout_constraintStart_toEndOf="@+id/imageButton2"
+            app:layout_constraintTop_toTopOf="@+id/imageButton2" />
+
+        <ImageButton
+            android:id="@+id/imageButton4"
+            android:layout_width="113dp"
+            android:layout_height="138dp"
+            android:background="@drawable/meeting_category_dongchang"
+            app:layout_constraintStart_toEndOf="@+id/imageButton3"
+            app:layout_constraintTop_toTopOf="@+id/imageButton3" />
+
+        <ImageButton
+            android:id="@+id/imageButton5"
+            android:layout_width="113dp"
+            android:layout_height="138dp"
+            android:background="@drawable/meeting_category_study" />
+
+        <ImageButton
+            android:id="@+id/imageButton6"
+            android:layout_width="113dp"
+            android:layout_height="138dp"
+            android:background="@drawable/meeting_category_food"
+            tools:layout_editor_absoluteY="281dp" />
+
+        <ImageButton
+            android:id="@+id/imageButton7"
+            android:layout_width="113dp"
+            android:layout_height="138dp"
+            android:background="@drawable/meeting_category_culture"
+            tools:layout_editor_absoluteY="258dp" />
+
+    </androidx.gridlayout.widget.GridLayout>
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="76dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/meeting_generatebutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/meeting_back1"
+        android:layout_width="45dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/meeting_backbutton"
+        app:layout_constraintBottom_toTopOf="@+id/searchView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.642" />
+
+    <ImageButton
+        android:id="@+id/textView13"
+        android:layout_width="84dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="292dp"
+        android:background="@drawable/meeting_neighborhood"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.055"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categorybutton" />
+
+    <com.naver.maps.map.MapView
+        android:id="@+id/meeting_map_fragment"
+        android:name="com.naver.maps.map.MapFragment"
+        android:layout_width="378dp"
+        android:layout_height="268dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="92dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.545"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13"
+        app:navermap_locationButtonEnabled="true"
+        app:navermap_tiltGesturesEnabled="false" >
+
+    </com.naver.maps.map.MapView>
+
+    <ImageView
+        android:id="@+id/title"
+        android:layout_width="116dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/meetingtitle" />
+
+    <ImageButton
+        android:id="@+id/fullscreen_map"
+        android:layout_width="110dp"
+        android:layout_height="55dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/materialToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.947"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

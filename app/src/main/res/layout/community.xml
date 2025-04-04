@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/populargrid"
+        android:layout_width="374dp"
+        android:layout_height="199dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="228dp"
+        app:columnCount="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.432"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rowCount="2">
+
+        <ImageButton
+            android:id="@+id/btn1"
+            android:layout_width="175dp"
+            android:layout_height="86dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/community_button_background" />
+
+        <ImageButton
+            android:id="@+id/btn2"
+            android:layout_width="175dp"
+            android:layout_height="85dp"
+            android:background="@drawable/community_button_background3" />
+
+        <ImageButton
+            android:id="@+id/btn3"
+            android:layout_width="175dp"
+            android:layout_height="85dp"
+            android:background="@drawable/community_button_background2" />
+
+        <ImageButton
+            android:id="@+id/btn4"
+            android:layout_width="175dp"
+            android:layout_height="85dp"
+            android:background="@drawable/community_button_background4" />
+    </androidx.gridlayout.widget.GridLayout>
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/categorygrid"
+        android:layout_width="370dp"
+        android:layout_height="240dp"
+        android:layout_gravity="center"
+        app:columnCount="3"
+        app:layout_constraintBottom_toTopOf="@+id/materialToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.973"
+        app:rowCount="2">
+
+        <ImageButton
+            android:id="@+id/btn5"
+            android:layout_width="110dp"
+            android:layout_height="120dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/community_cooking_button" />
+
+        <ImageButton
+            android:id="@+id/btn6"
+            android:layout_width="110dp"
+            android:layout_height="120dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/community_exercise_button" />
+
+        <ImageButton
+            android:id="@+id/btn7"
+            android:layout_width="110dp"
+            android:layout_height="120dp"
+            android:background="@drawable/community_cartoon_button" />
+
+        <ImageButton
+            android:id="@+id/btn8"
+            android:layout_width="110dp"
+            android:layout_height="120dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/community_fashion_button" />
+
+        <ImageButton
+            android:id="@+id/btn9"
+            android:layout_width="110dp"
+            android:layout_height="120dp"
+            android:layout_marginRight="20dp"
+
+            android:background="@drawable/community_employment_button" />
+
+        <ImageButton
+            android:id="@+id/btn10"
+            android:layout_width="110dp"
+            android:layout_height="120dp"
+            android:background="@drawable/community_trip_button" />
+
+    </androidx.gridlayout.widget.GridLayout>
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/materialToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:background="#BAA681"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageButton
+        android:id="@+id/check"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/check"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/chat"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/home"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="54dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/check"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/chat"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/chat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mypage"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageButton
+        android:id="@+id/mypage"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="54dp"
+        android:background="@drawable/mypage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="45dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/meeting_backbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <SearchView
+        android:id="@+id/communitysearch"
+        android:layout_width="335dp"
+        android:layout_height="40dp"
+        android:background="@drawable/search1"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.253"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.129" />
+
+    <ImageButton
+        android:id="@+id/categoryadd"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/meeting_generatebutton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.962"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.129" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="177dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/community_title" />
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="143dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/populargrid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/community_popular" />
+
+    <ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="147dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/categorygrid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.072"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/meeting_category" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

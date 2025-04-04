@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="방 제목"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/roomTitleInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="방 제목을 입력하세요" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="소개글"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/roomDescriptionInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="소개글을 입력하세요" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="최대 참여 인원"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/maxParticipantsInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="최대 참여 인원"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="완료"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>

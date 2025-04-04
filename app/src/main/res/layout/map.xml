@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--지도 불러오기 -->
+    <!--버튼 위치-->
+
+
+    <!--카테고리-->
+
+    <com.naver.maps.map.MapView
+        android:id="@+id/map_fragment"
+        android:name="com.naver.maps.map.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:navermap_locationButtonEnabled="true"
+        app:navermap_tiltGesturesEnabled="false">
+
+    </com.naver.maps.map.MapView>
+
+    <HorizontalScrollView
+        android:id="@+id/categoryScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="@+id/categoryScrollView"
+            tools:layout_editor_absoluteX="17dp">
+
+            <!--android:drawableTop="@drawable/restaurant_icon"-->
+
+            <ImageButton
+                android:id="@+id/btnchinmok"
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/map_chinmok"
+                android:scaleType="fitCenter" />
+
+            <ImageButton
+                android:id="@+id/btnexercise"
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/map_exercise"
+                android:scaleType="fitCenter" />
+            <!--android:drawableTop="@drawable/cafe_icon"-->
+
+            <!--android:drawableTop="@drawable/convenience_icon"-->
+            <ImageButton
+                android:id="@+id/btnmovie"
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/map_movie"
+                android:scaleType="fitCenter" />
+
+            <ImageButton
+                android:id="@+id/btnfood"
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/map_food"
+                android:scaleType="fitCenter" />
+            <ImageButton
+                android:id="@+id/btndongchang"
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/map_dongchang"
+                android:scaleType="fitCenter" />
+            <ImageButton
+                android:id="@+id/btnstudy"
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/map_study"
+                android:scaleType="fitCenter" />
+
+            <!-- 추가 버튼들을 여기에 계속 추가할 수 있습니다 -->
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!--검색-->
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="375dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="52dp"
+        android:background="@drawable/search1"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.555"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/back"
+        android:layout_width="57dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/meeting_backbutton"
+        app:layout_constraintBottom_toTopOf="@+id/searchView"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--툴바-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
