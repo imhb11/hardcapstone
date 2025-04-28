@@ -50,40 +50,6 @@ public class MainActivity extends AppCompatActivity {
         // 매일 알림 설정 (예: 오후 7시 44분)
         setDailyNotification(this, 8, 0);
 
-        // 이미지 슬라이드 코드
-        ViewPager2 viewPager2 = mBinding.viewPager;
-        List<Integer> images = Arrays.asList(
-                R.drawable.a,
-                R.drawable.a2,
-                R.drawable.a3,
-                R.drawable.a4
-        );
-        ImageAdapter adapter = new ImageAdapter(images, viewPager2);
-        viewPager2.setAdapter(adapter);
-
-        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                sliderHandler.removeCallbacks(sliderRunnable);
-                sliderHandler.postDelayed(sliderRunnable, 2000);
-            }
-        });
-
-        // 주간 달력 설정 및 감정 데코레이터 적용
-        MaterialCalendarView weeklyCalendar = findViewById(R.id.weeklyCalendar);
-        applyMoodDecorators(weeklyCalendar);
-
-        // 주간 보기 설정
-        weeklyCalendar.state().edit()
-                .setCalendarDisplayMode(CalendarMode.WEEKS)
-                .commit();
-
-        // 주간 달력 클릭 시 Check 화면으로 이동
-        weeklyCalendar.setOnDateChangedListener((widget, date, selected) -> {
-            Intent intent = new Intent(MainActivity.this, Check.class);
-            startActivity(intent);
-        });
 
         // 버튼 작동 코드들
         mBinding.notice.setOnClickListener(v -> {
@@ -91,28 +57,23 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        mBinding.purchase.setOnClickListener(v -> {
+        mBinding.purchaseButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Purchase.class);
             startActivity(intent);
         });
 
-        mBinding.meeting.setOnClickListener(v -> {
+        mBinding.meetingButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Meeting.class);
             startActivity(intent);
         });
 
-        mBinding.community.setOnClickListener(v -> {
+        mBinding.communityButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Community.class);
             startActivity(intent);
         });
 
-        mBinding.smart.setOnClickListener(v -> {
+        mBinding.counselButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Smart.class);
-            startActivity(intent);
-        });
-
-        mBinding.check.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, Check.class);
             startActivity(intent);
         });
 
@@ -121,10 +82,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        mBinding.chat.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, Chat.class);
-            startActivity(intent);
-        });
 
         mBinding.mypage.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Mypage.class);
@@ -140,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "알림 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show();
@@ -167,16 +125,6 @@ public class MainActivity extends AppCompatActivity {
         mBackPressedTime = currentTime;
     }
 
-    private final Runnable sliderRunnable = new Runnable() {
-        @Override
-        public void run() {
-            int nextItem = mBinding.viewPager.getCurrentItem() + 1;
-            if (nextItem >= mBinding.viewPager.getAdapter().getItemCount()) {
-                nextItem = 0;
-            }
-            mBinding.viewPager.setCurrentItem(nextItem, true);
-        }
-    };
 
     public static void setDailyNotification(Context context, int hour, int minute) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -195,60 +143,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 추가된 메서드: 감정 데이터를 불러와 주간 달력에 적용
-    private void applyMoodDecorators(MaterialCalendarView calendarView) {
-        SharedPreferences sharedPreferences = getSharedPreferences("MoodPreferences", MODE_PRIVATE);
-        Map<String, ?> moodEntries = sharedPreferences.getAll();
 
-        for (Map.Entry<String, ?> entry : moodEntries.entrySet()) {
-            String[] dateParts = entry.getKey().split("_");
-            int year = Integer.parseInt(dateParts[0]);
-            int month = Integer.parseInt(dateParts[1]);
-            int day = Integer.parseInt(dateParts[2]);
 
-            CalendarDay date = CalendarDay.from(year, month, day);
-            String mood = (String) entry.getValue();
-            calendarView.addDecorator(new MoodDecorator(date, mood));
-        }
-    }
-
-    // MoodDecorator 클래스 정의
-    private class MoodDecorator implements DayViewDecorator {
-        private final CalendarDay date;
-        private final String mood;
-
-        public MoodDecorator(CalendarDay date, String mood) {
-            this.date = date;
-            this.mood = mood;
-        }
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            return day.equals(date);
-        }
-
-        @Override
-        public void decorate(DayViewFacade view) {
-            int drawableId = getDrawableForMood(mood);
-            if (drawableId != 0) {
-                Drawable drawable = ContextCompat.getDrawable(MainActivity.this, drawableId);
-                view.setBackgroundDrawable(drawable);
-            }
-        }
-
-        private int getDrawableForMood(String mood) {
-            switch (mood) {
-                case "😀 행복":
-                    return R.drawable.happy;
-                case "😐 보통":
-                    return R.drawable.just;
-                case "😢 슬픔":
-                    return R.drawable.sad;
-                case "😠 화남":
-                    return R.drawable.angry;
-                default:
-                    return 0;
-            }
-        }
-    }
 }

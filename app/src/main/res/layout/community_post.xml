@@ -103,11 +103,11 @@
         android:id="@+id/comment_send"
         android:layout_width="57dp"
         android:layout_height="50dp"
+        android:src="@drawable/message_send"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/subtitle_input"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintStart_toEndOf="@+id/subtitle_input" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

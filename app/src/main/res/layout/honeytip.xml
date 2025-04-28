@@ -79,7 +79,7 @@
         android:layout_height="60dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="15dp"
-        android:background="@drawable/mypage"
+        android:background="@drawable/mypagebutton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/materialToolbar"
         app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
