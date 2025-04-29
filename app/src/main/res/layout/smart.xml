@@ -30,7 +30,9 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:src="@drawable/kongnamul"
-        android:visibility="gone" /> <!-- 기본적으로 숨김 -->
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/camera_view"
+        app:layout_constraintEnd_toEndOf="@+id/previewView" /> <!-- 기본적으로 숨김 -->
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/materialToolbar"

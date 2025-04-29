@@ -18,17 +18,6 @@ import java.io.IOException;
 
 public class Purchase extends AppCompatActivity {
 
-    String url = "https://m.market09.kr/home";
-    String msg;
-    final Bundle bundle = new Bundle();
-    Handler handler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Bundle bundle = msg.getData();
-            String message = bundle.getString("message");
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,22 +50,7 @@ public class Purchase extends AppCompatActivity {
             startActivity(intent);
         });
 
-//        new Thread(){
-//            @Override
-//            public void run(){
-//                Document doc = null;
-//                try{
-//                    doc = Jsoup.connect(url).get();
-//                    msg = doc.text();
-//                    bundle.putString("message",msg);
-//                    Message msg = handler.obtainMessage();
-//                    msg.setData(bundle);
-//                    handler.sendMessage(msg);
-//                } catch(IOException e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }.start();
+
         WebView webView = findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true); // 자바스크립트 활성화
         webView.getSettings().setDomStorageEnabled(true);  // DOM 스토리지 (localStorage) 허용
