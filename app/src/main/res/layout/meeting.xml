@@ -65,26 +65,23 @@
 
     <SearchView
         android:id="@+id/searchView"
-        android:layout_width="320dp"
-        android:layout_height="39dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="76dp"
-        android:background="@drawable/search1"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintHorizontal_bias="0.117"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/border"
+        android:iconifiedByDefault="false"
+        android:queryHint="검색어를 입력해보세요."
+        tools:layout_editor_absoluteX="18dp"
+        tools:layout_editor_absoluteY="66dp" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/categorybutton"
-        android:layout_width="104dp"
+        android:layout_width="176dp"
         android:layout_height="27dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/meeting_category"
+        android:layout_marginTop="8dp"
+        android:text="어떤 모임에 참여하시겠어요?"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.058"
+        app:layout_constraintHorizontal_bias="0.076"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
@@ -109,7 +106,7 @@
             android:layout_width="113dp"
             android:layout_height="138dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/meeting_category_exercise"
+            android:background="@drawable/meeting_exercisebutton"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="159dp" />
 
@@ -118,7 +115,7 @@
             android:layout_width="113dp"
             android:layout_height="138dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/meeting_category_chinmok"
+            android:background="@drawable/meeting_friendshipbutton"
             app:layout_constraintStart_toEndOf="@+id/imageButton2"
             app:layout_constraintTop_toTopOf="@+id/imageButton2" />
 
@@ -126,7 +123,7 @@
             android:id="@+id/imageButton4"
             android:layout_width="113dp"
             android:layout_height="138dp"
-            android:background="@drawable/meeting_category_dongchang"
+            android:background="@drawable/meeting_dongchangbutton"
             app:layout_constraintStart_toEndOf="@+id/imageButton3"
             app:layout_constraintTop_toTopOf="@+id/imageButton3" />
 
@@ -134,20 +131,20 @@
             android:id="@+id/imageButton5"
             android:layout_width="113dp"
             android:layout_height="138dp"
-            android:background="@drawable/meeting_category_study" />
+            android:background="@drawable/meeting_studybutton" />
 
         <ImageButton
             android:id="@+id/imageButton6"
             android:layout_width="113dp"
             android:layout_height="138dp"
-            android:background="@drawable/meeting_category_food"
+            android:background="@drawable/meeting_foodbutton"
             tools:layout_editor_absoluteY="281dp" />
 
         <ImageButton
             android:id="@+id/imageButton7"
             android:layout_width="113dp"
             android:layout_height="138dp"
-            android:background="@drawable/meeting_category_culture"
+            android:background="@drawable/meeting_culturebutton"
             tools:layout_editor_absoluteY="258dp" />
 
     </androidx.gridlayout.widget.GridLayout>
@@ -200,16 +197,6 @@
         app:navermap_tiltGesturesEnabled="false" >
 
     </com.naver.maps.map.MapView>
-
-    <ImageView
-        android:id="@+id/title"
-        android:layout_width="116dp"
-        android:layout_height="53dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/meetingtitle" />
 
     <ImageButton
         android:id="@+id/fullscreen_map"

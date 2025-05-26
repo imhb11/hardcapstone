@@ -33,7 +33,7 @@
         <activity android:name=".MessageBoard" />
         <activity android:name=".Purchase" />
         <activity android:name=".Recycle" />
-        <activity android:name=".Smart" />
+        <activity android:name=".Chatbot" />
         <activity android:name=".Notice" />
         <activity android:name=".Map" />
         <activity android:name=".Check" />
