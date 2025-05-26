@@ -46,10 +46,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_SELF) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_self, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_user_message, parent, false);
             return new SelfMessageViewHolder(view);
         } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_other, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_bot_message, parent, false);
             return new OtherMessageViewHolder(view);
         }
     }
@@ -80,21 +80,26 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         public void bind(ChatMessage chatMessage) {
-            messageText.setText(chatMessage.getContent());
+            Log.d("ChatMessageAdapter", "Message: " + chatMessage.getMessage());
+            messageText.setText(chatMessage.getMessage());
             messageTimestamp.setText(formatTimestamp(chatMessage.getTimestamp()));
         }
         // 시간을 00:00 형태로 포맷하는 메서드
-        private String formatTimestamp(String timestamp) {
+        public static String formatTimestamp(String timestamp) {
             try {
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault());
-                SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-                Date date = inputFormat.parse(timestamp);
-                return outputFormat.format(date);
-            } catch (ParseException e) {
+                // 숫자로 파싱
+                long timeMillis = Long.parseLong(timestamp);
+                Date date = new Date(timeMillis);
+
+                // 원하는 형식으로 포맷
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                return sdf.format(date);
+            } catch (NumberFormatException e) {
                 e.printStackTrace();
-                return timestamp; // 포맷 실패 시 원래의 타임스탬프 반환
+                return "";
             }
         }
+
     }
 
     // ViewHolder for other messages
@@ -109,20 +114,24 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         public void bind(ChatMessage chatMessage) {
+            Log.d("ChatMessageAdapter", "botMessage: " + chatMessage.getMessage());
             userId.setText(chatMessage.getSenderId());
-            messageText.setText(chatMessage.getContent());
+            messageText.setText(chatMessage.getMessage());
             messageTimestamp.setText(formatTimestamp(chatMessage.getTimestamp()));
         }
 
-        private String formatTimestamp(String timestamp) {
+        public static String formatTimestamp(String timestamp) {
             try {
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault());
-                SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-                Date date = inputFormat.parse(timestamp);
-                return outputFormat.format(date);
-            } catch (ParseException e) {
+                // 숫자로 파싱
+                long timeMillis = Long.parseLong(timestamp);
+                Date date = new Date(timeMillis);
+
+                // 원하는 형식으로 포맷
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                return sdf.format(date);
+            } catch (NumberFormatException e) {
                 e.printStackTrace();
-                return timestamp;
+                return "";
             }
         }
     }
