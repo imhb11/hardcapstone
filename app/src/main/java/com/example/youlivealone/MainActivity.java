@@ -82,6 +82,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        mBinding.foots.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, Check.class);
+            startActivity(intent);
+        });
+
 
         mBinding.mypage.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Mypage.class);

@@ -9,65 +9,97 @@
     tools:context=".MainActivity">
 
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="327dp"
-        android:layout_height="96dp"
-        android:layout_marginTop="108dp"
-        android:foreground="?attr/selectableItemBackground"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="6dp"
+    <ImageView
+        android:id="@+id/main_pedometerview"
+        android:layout_width="wrap_content"
+        android:layout_height="88dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/main_pedometer"
+        app:layout_constraintBottom_toTopOf="@+id/purchaseButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="314dp"
-            android:layout_height="92dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/main_pedometer"
-            tools:layout_editor_absoluteX="48dp"
-            tools:layout_editor_absoluteY="141dp" />
-
-        <ImageView
-            android:id="@+id/imageView6"
-            android:layout_width="94dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            app:srcCompat="@drawable/main_pedometer_foot" />
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.912" />
 
     <ImageView
-        android:id="@+id/mainback"
-        android:layout_width="match_parent"
-        android:layout_height="242dp"
-        android:layout_marginBottom="688dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/communityButton"
+        android:layout_width="165dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="36dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_pedometerview"
+        app:srcCompat="@drawable/main_community_button" />
+
+    <ImageView
+        android:id="@+id/counselButton"
+        android:layout_width="165dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/communityButton"
+        app:srcCompat="@drawable/main_counsel_button" />
+
+    <ImageView
+        android:id="@+id/meetingButton"
+        android:layout_width="165dp"
+        android:layout_height="160dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/counselButton"
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/purchaseButton"
+        app:srcCompat="@drawable/main_purchase_button" />
+
+    <ImageView
+        android:id="@+id/purchaseButton"
+        android:layout_width="165dp"
+        android:layout_height="160dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="180dp"
+        app:layout_constraintEnd_toStartOf="@+id/communityButton"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/main_background" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/main_meeting_button" />
 
     <ImageButton
         android:id="@+id/notice"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/notice_off"
         app:layout_constraintBottom_toBottomOf="@+id/imageView7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageView7"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="다락방"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/notice"
+        app:layout_constraintHorizontal_bias="0.057"
+        app:layout_constraintStart_toEndOf="@+id/imageView7"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView7"
         android:layout_width="49dp"
         android:layout_height="49dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/logo_re" />
@@ -79,7 +111,7 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/materialToolbar"
         android:layout_width="418dp"
-        android:layout_height="62dp"
+        android:layout_height="75dp"
         android:background="@color/white"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
@@ -88,135 +120,88 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageButton
-        android:id="@+id/home"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="44dp"
-        android:background="@drawable/homebutton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/materialToolbar"
-        app:layout_constraintVertical_bias="0.631" />
-
-    <ImageButton
-        android:id="@+id/mypage"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="64dp"
-        android:background="@drawable/mypagebutton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/materialToolbar"
-        app:layout_constraintVertical_bias="0.631" />
 
     <ImageView
         android:id="@+id/banner"
         android:layout_width="408dp"
         android:layout_height="129dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="72dp"
         app:layout_constraintBottom_toBottomOf="@+id/materialToolbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/banner" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
-        android:text="다락방"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/notice"
-        app:layout_constraintHorizontal_bias="0.048"
-        app:layout_constraintStart_toEndOf="@+id/imageView7"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/counselButton"
-        android:layout_width="165dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/communityButton"
-        app:srcCompat="@drawable/main_counsel" />
-
-    <ImageView
-        android:id="@+id/meetingButton"
-        android:layout_width="165dp"
-        android:layout_height="160dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toStartOf="@+id/counselButton"
-        app:layout_constraintHorizontal_bias="0.666"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/purchaseButton"
-        app:srcCompat="@drawable/main_gathering" />
-
-    <ImageView
-        android:id="@+id/communityButton"
-        android:layout_width="165dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:srcCompat="@drawable/main_community" />
-
-    <ImageView
-        android:id="@+id/purchaseButton"
-        android:layout_width="165dp"
-        android:layout_height="160dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toStartOf="@+id/communityButton"
-        app:layout_constraintHorizontal_bias="0.844"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:srcCompat="@drawable/main_purchase" />
-
-    <ImageView
-        android:id="@+id/chart1"
-        android:layout_width="330dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="356dp"
-        android:layout_marginEnd="36dp"
-        android:alpha="0.46"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.666"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:srcCompat="@drawable/main_chart" />
+        app:srcCompat="@drawable/main_banner" />
 
     <ImageView
         android:id="@+id/chart2"
         android:layout_width="330dp"
-        android:layout_height="42dp"
+        android:layout_height="70dp"
         android:layout_marginStart="36dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="44dp"
         android:layout_marginEnd="36dp"
-        android:alpha="0.46"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart1"
-        app:srcCompat="@drawable/main_chart" />
+        app:layout_constraintTop_toBottomOf="@+id/counselButton"
+        app:srcCompat="@drawable/main_popularcard" />
 
     <ImageView
-        android:id="@+id/imageView17"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
+        android:id="@+id/chart1"
+        android:layout_width="330dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="36dp"
         android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toStartOf="@+id/mypage"
-        app:layout_constraintHorizontal_bias="0.525"
-        app:layout_constraintStart_toEndOf="@+id/home"
+        android:layout_marginEnd="36dp"
+        app:layout_constraintBottom_toTopOf="@+id/banner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chart2"
+        app:srcCompat="@drawable/main_popularcard" />
+
+    <ImageButton
+        android:id="@+id/home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/materialToolbar"
-        app:srcCompat="@drawable/footbutton" />
+        app:layout_constraintVertical_bias="0.631"
+        android:background="@drawable/navigation_home_button"/>
+
+    <ImageButton
+        android:id="@+id/mypage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar"
+        app:layout_constraintVertical_bias="0.631"
+        android:background="@drawable/navigation_mypage_button"/>
+
+    <ImageView
+        android:id="@+id/foots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/navigation_foot_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mypage"
+        app:layout_constraintHorizontal_bias="0.518"
+        app:layout_constraintStart_toEndOf="@+id/home"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/main_populartext"
+        app:layout_constraintBottom_toTopOf="@+id/chart2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.148"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/meetingButton"
+        app:layout_constraintVertical_bias="0.54" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

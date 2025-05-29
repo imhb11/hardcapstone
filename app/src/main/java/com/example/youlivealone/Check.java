@@ -1,180 +1,257 @@
 package com.example.youlivealone;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Field;
+import com.google.android.gms.fitness.request.DataReadRequest;
+import com.google.android.gms.fitness.result.DataReadResponse;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Check extends AppCompatActivity {
 
     private MaterialCalendarView calendarView;
-    private SharedPreferences sharedPreferences;
-    private String jwtToken;
-    private RequestQueue requestQueue;
+    private final String TAG = "CheckActivity";
+    private RequestQueue queue;
+    private FitnessOptions fitnessOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check);
+
         calendarView = findViewById(R.id.calendarView);
+        queue = Volley.newRequestQueue(this);
+        setFullMonthView();
 
-        // SharedPreferences에서 JWT 토큰 및 저장된 기분 데이터 가져오기
-        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        jwtToken = sharedPreferences.getString("jwtToken", null);
+        // ✅ 1. FitnessOptions 구성
+        fitnessOptions = FitnessOptions.builder()
+                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                .build();
 
-        // 저장된 기분 데이터를 불러와 캘린더에 표시
-        loadMoodsFromPreferences();
+        // ✅ 2. GoogleSignInOptions 명시적으로 설정 + Fit 권한 요청 포함
+        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestScopes(new com.google.android.gms.common.api.Scope("https://www.googleapis.com/auth/fitness.activity.read"))
+                .build();
 
-        // Volley 요청 큐 초기화
-        requestQueue = Volley.newRequestQueue(this);
+        // ✅ 3. GoogleSignIn 계정 획득
+        GoogleSignInAccount account = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
+        Log.d("CheckActivity", "account = " + account);
+        Log.d("CheckActivity", "hasPermissions = " + GoogleSignIn.hasPermissions(account, fitnessOptions));
 
-        // 오늘 날짜 가져오기
-        CalendarDay today = CalendarDay.today();
 
-        // 날짜 선택 리스너 설정 (오늘 날짜 클릭 시 출석 체크 요청 전송)
-        calendarView.setOnDateChangedListener((widget, date, selected) -> {
-            if (date.equals(today)) {
-                showMoodSelectionDialog(today); // 기분 선택 다이얼로그 표시
+        // ✅ 4. 권한 확인 및 요청
+        if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
+            Log.d(TAG, "Google Fit 권한 없음 → 요청 중");
+            GoogleSignIn.requestPermissions(
+                    this,
+                    1001,
+                    account,
+                    fitnessOptions
+            );
+        } else {
+            Log.d(TAG, "Google Fit 권한 있음 → 걸음수 요청 시작");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACTIVITY_RECOGNITION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION},
+                            2001);  // requestCode는 자유
+                } else {
+                    getTodayStepCountAndPost(); // 권한 있으면 실행
+                }
             } else {
-                Toast.makeText(Check.this, "오늘 날짜만 선택 가능합니다.", Toast.LENGTH_SHORT).show();
+                getTodayStepCountAndPost(); // Android 9 이하면 바로 실행
             }
-        });
 
-        // 하단 버튼 기능 설정
-        findViewById(R.id.check).setOnClickListener(v -> startActivity(new Intent(Check.this, Check.class)));
-        findViewById(R.id.home).setOnClickListener(v -> startActivity(new Intent(Check.this, MainActivity.class)));
-        findViewById(R.id.chat).setOnClickListener(v -> startActivity(new Intent(Check.this, Chat.class)));
-        findViewById(R.id.mypage).setOnClickListener(v -> startActivity(new Intent(Check.this, Mypage.class)));
+        }
     }
 
-    // 기분 선택 다이얼로그를 표시하는 메서드
-    private void showMoodSelectionDialog(CalendarDay date) {
-        String[] moods = {"😀 행복", "😐 보통", "😢 슬픔", "😠 화남"};
-        int[] moodImages = {R.drawable.happy, R.drawable.just, R.drawable.sad, R.drawable.angry};
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(Check.this);
-        builder.setTitle("오늘의 기분을 선택하세요")
-                .setItems(moods, (dialog, which) -> {
-                    // 선택한 기분을 SharedPreferences에 저장
-                    saveMoodToPreferences(date, moods[which], moodImages[which]);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001) {
+            if (resultCode == RESULT_OK) {
+                getTodayStepCountAndPost(); // 사용자가 동의했을 경우
+            } else {
+                Toast.makeText(this, "Google Fit 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
-                    // 선택한 기분 이미지로 데코레이터 설정
-                    calendarView.addDecorator(new MoodDecorator(date, moodImages[which]));
 
-                    // 서버에 출석 체크 요청 보내기
-                    sendAttendanceCheckRequest();
+    private void setFullMonthView() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        CalendarDay min = CalendarDay.from(cal);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        CalendarDay max = CalendarDay.from(cal);
+
+        calendarView.state().edit().setMinimumDate(min).setMaximumDate(max).commit();
+    }
+
+    private int extractMemberIdFromJWT() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = prefs.getString("jwtToken", null);
+        if (token == null) return -1;
+
+        try {
+            Log.d("JWT", "Raw token: " + token);
+            String[] parts = token.split("\\.");
+            byte[] payload = Base64.decode(parts[1], Base64.URL_SAFE);
+            String json = new String(payload, StandardCharsets.UTF_8);
+            JSONObject obj = new JSONObject(json);
+            Log.d("JWT", "Decoded payload: " + json);  // 이거 꼭 찍어봐야 함
+            return obj.getInt("memberId");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+
+    }
+
+    private void getTodayStepCountAndPost() {
+        Calendar end = Calendar.getInstance();
+        Calendar start = Calendar.getInstance();
+        start.set(Calendar.HOUR_OF_DAY, 0);
+        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.SECOND, 0);
+
+        DataReadRequest readRequest = new DataReadRequest.Builder()
+                .aggregate(DataType.TYPE_STEP_COUNT_DELTA)
+                .setTimeRange(start.getTimeInMillis(), end.getTimeInMillis(), TimeUnit.MILLISECONDS)
+                .bucketByTime(1, TimeUnit.DAYS)
+                .build();
+
+        Fitness.getHistoryClient(this, GoogleSignIn.getLastSignedInAccount(this))
+                .readData(readRequest)
+                .addOnSuccessListener(response -> {
+                    int steps = 0;
+
+                    if (!response.getBuckets().isEmpty()) {
+                        List<DataSet> dataSets = response.getBuckets().get(0).getDataSets();
+                        if (!dataSets.isEmpty()) {
+                            List<DataPoint> dataPoints = dataSets.get(0).getDataPoints();
+                            if (!dataPoints.isEmpty()) {
+                                steps = dataPoints.get(0).getValue(Field.FIELD_STEPS).asInt();
+                            }
+                        }
+                    }
+
+                    postStepsToServer(steps);
+                })
+
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    Toast.makeText(this, "걸음 수 측정 실패", Toast.LENGTH_SHORT).show();
                 });
-        builder.create().show();
     }
 
-    // 출석 체크 요청을 보내는 메서드
-    private void sendAttendanceCheckRequest() {
-        String url = "http://15.165.92.121:8080/attendance/check";
-
-        // JWT 토큰이 존재하는지 확인
-        if (jwtToken == null) {
-            Toast.makeText(Check.this, "로그인 후 출석 체크가 가능합니다.", Toast.LENGTH_SHORT).show();
+    private void postStepsToServer(int steps) {
+        int memberId = extractMemberIdFromJWT();
+        if (memberId == -1) {
+            Toast.makeText(this, "로그인 정보 없음", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Volley를 사용하여 POST 요청을 보내기
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                response -> {
-                    // 서버 응답 성공 시 처리
-                    Toast.makeText(Check.this, "출석 체크 완료: " + response, Toast.LENGTH_SHORT).show();
-                    Log.d("CheckActivity", "출석 체크 서버 응답: " + response);
+        String url = "http://15.165.92.121:8080/pedometers";
 
-                },
-                error -> {
-                    // 오류 발생 시 처리
-                    Log.e("CheckActivity", "출석 체크 실패: " + error.getMessage());
-                    if (error.networkResponse != null) {
-                        int statusCode = error.networkResponse.statusCode;
-                        String errorMsg = new String(error.networkResponse.data);
-                        Log.e("CheckActivity", "상태 코드: " + statusCode);
-                        Log.e("CheckActivity", "서버 응답 메시지: " + errorMsg);
-                    }
-                    Toast.makeText(Check.this, "출석 체크 실패", Toast.LENGTH_SHORT).show();
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + jwtToken); // JWT 토큰을 헤더에 추가
-                return headers;
-            }
+        JSONObject memberObj = new JSONObject();
+        JSONObject pedometerObj = new JSONObject();
+        try {
+            memberObj.put("memberId", memberId);
+            pedometerObj.put("pedometerId", 0);
+            pedometerObj.put("steps", steps);
+            pedometerObj.put("recordDate", Instant.now().toString());
+            pedometerObj.put("member", memberObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-            @Override
-            public byte[] getBody() {
-                return null;
-            }
-        };
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, url, pedometerObj,
+                response -> handlePedometerResponse(new JSONArray().put(response)),
+                error -> Log.e(TAG, "Post failed: " + error.toString())
+        );
 
-        // 요청을 요청 큐에 추가
-        requestQueue.add(stringRequest);
+        queue.add(request);
     }
 
-    // 감정 데이터를 SharedPreferences에 저장하는 메서드
-    private void saveMoodToPreferences(CalendarDay date, String mood, int moodImageRes) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String key = date.getYear() + "_" + date.getMonth() + "_" + date.getDay();
-        editor.putString(key + "_mood", mood);
-        editor.putInt(key + "_moodImageRes", moodImageRes);
-        editor.apply();
-    }
+    private void handlePedometerResponse(JSONArray response) {
+        try {
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject item = response.getJSONObject(i);
+                int steps = item.getInt("steps");
+                String recordDate = item.getString("recordDate");
 
-    // SharedPreferences에서 감정 데이터를 불러와 캘린더에 표시하는 메서드
-    private void loadMoodsFromPreferences() {
-        Map<String, ?> allEntries = sharedPreferences.getAll();
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            String key = entry.getKey();
-            String[] dateParts = key.split("_");
+                LocalDate date = Instant.parse(recordDate)
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
 
-            if (dateParts.length == 3) { // 키가 날짜 형식인 경우만 처리
-                try {
-                    int year = Integer.parseInt(dateParts[0]);
-                    int month = Integer.parseInt(dateParts[1]);
-                    int day = Integer.parseInt(dateParts[2]);
-                    CalendarDay date = CalendarDay.from(year, month, day);
-                    int moodImageRes = sharedPreferences.getInt(key + "_moodImageRes", 0);
-
-                    // 데코레이터 추가하여 캘린더에 감정 이미지 표시
-                    if (moodImageRes != 0) {
-                        calendarView.addDecorator(new MoodDecorator(date, moodImageRes));
-                    }
-                } catch (NumberFormatException e) {
-                    Log.e("CheckActivity", "잘못된 날짜 형식 키: " + key);
-                }
+                CalendarDay day = CalendarDay.from(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+                calendarView.addDecorator(new StepDecorator(day, steps, this));
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    // 감정 이미지를 추가하는 MoodDecorator 클래스
-    private class MoodDecorator implements DayViewDecorator {
+    public static class StepDecorator implements DayViewDecorator {
         private final CalendarDay date;
-        private final int moodImageRes;
+        private final int steps;
+        private final Context context;
 
-        public MoodDecorator(CalendarDay date, int moodImageRes) {
+        public StepDecorator(CalendarDay date, int steps, Context context) {
             this.date = date;
-            this.moodImageRes = moodImageRes;
+            this.steps = steps;
+            this.context = context;
         }
 
         @Override
@@ -184,8 +261,47 @@ public class Check extends AppCompatActivity {
 
         @Override
         public void decorate(DayViewFacade view) {
-            Drawable drawable = ContextCompat.getDrawable(Check.this, moodImageRes);
-            view.setBackgroundDrawable(drawable);
+            view.addSpan(new StepTextSpan(context, steps));
         }
     }
+
+    public static class StepTextSpan extends android.text.style.ReplacementSpan {
+        private final int steps;
+        private final Context context;
+
+        public StepTextSpan(Context context, int steps) {
+            this.steps = steps;
+            this.context = context;
+        }
+
+        @Override
+        public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
+            return (int) paint.measureText(text, start, end);
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end,
+                         float x, int top, int y, int bottom, @NonNull Paint paint) {
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(40f);
+            canvas.drawText(text, start, end, x, y, paint);
+            paint.setTextSize(24f);
+            paint.setColor(Color.parseColor("#FF9861"));
+            canvas.drawText(steps + "걸음", x, y + 30, paint);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 2001) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getTodayStepCountAndPost();
+            } else {
+                Toast.makeText(this, "걸음 수 인식 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }

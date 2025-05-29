@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,8 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 
 public class Login extends AppCompatActivity {
     EditText ID, Password;
@@ -70,6 +73,19 @@ public class Login extends AppCompatActivity {
                             editor.putString("userID", id);
                             editor.putString("jwtToken", token); // JWT 토큰 저장
                             editor.apply();
+
+                            try {
+                                String[] parts = token.split("\\.");
+                                if (parts.length == 3) {
+                                    byte[] payloadBytes = Base64.decode(parts[1], Base64.URL_SAFE);
+                                    String payloadJson = new String(payloadBytes, StandardCharsets.UTF_8);
+                                    Log.d("JWT_PAYLOAD", "Decoded JWT Payload: " + payloadJson);
+                                } else {
+                                    Log.e("JWT_PAYLOAD", "Invalid JWT format: " + token);
+                                }
+                            } catch (Exception e) {
+                                Log.e("JWT_PAYLOAD", "Error decoding JWT", e);
+                            }
 
                             // 메인 액티비티로 이동
                             Intent intent = new Intent(Login.this, MainActivity.class);
