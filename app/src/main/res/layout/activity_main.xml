@@ -134,13 +134,13 @@
 
     <ImageView
         android:id="@+id/chart2"
-        android:layout_width="330dp"
-        android:layout_height="70dp"
+        android:layout_width="327dp"
+        android:layout_height="52dp"
         android:layout_marginStart="36dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="36dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/counselButton"
         app:srcCompat="@drawable/main_popularcard" />
@@ -148,7 +148,7 @@
     <ImageView
         android:id="@+id/chart1"
         android:layout_width="330dp"
-        android:layout_height="70dp"
+        android:layout_height="51dp"
         android:layout_marginStart="36dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="36dp"
@@ -157,6 +157,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart2"
+        app:layout_constraintVertical_bias="0.854"
         app:srcCompat="@drawable/main_popularcard" />
 
     <ImageButton
@@ -202,6 +203,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/meetingButton"
         app:layout_constraintVertical_bias="0.54" />
+
+    <TextView
+        android:id="@+id/today_steps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="걸음 수 표시"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/main_pedometerview"
+        app:layout_constraintEnd_toEndOf="@+id/main_pedometerview"
+        app:layout_constraintHorizontal_bias="0.904"
+        app:layout_constraintStart_toStartOf="@+id/main_pedometerview"
+        app:layout_constraintTop_toTopOf="@+id/main_pedometerview"
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

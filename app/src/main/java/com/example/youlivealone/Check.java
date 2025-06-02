@@ -1,5 +1,8 @@
 package com.example.youlivealone;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,57 +10,59 @@ import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.FitnessOptions;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.fitness.request.DataReadRequest;
-import com.google.android.gms.fitness.result.DataReadResponse;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Locale;
+import java.util.Map;
 
-public class Check extends AppCompatActivity {
+public class Check extends AppCompatActivity implements SensorEventListener {
 
     private MaterialCalendarView calendarView;
-    private final String TAG = "CheckActivity";
-    private RequestQueue queue;
-    private FitnessOptions fitnessOptions;
+    private SensorManager sensorManager;
+    private Sensor stepSensor;
+    private int previousSensorValue = 0;
+    private static final int PERMISSION_REQUEST_ACTIVITY_RECOGNITION = 1001;
+    private final Handler stepHandler = new Handler();
+    private final Runnable stepUpdater = new Runnable() {
+        @Override
+        public void run() {
+            displayStepsFromLocal();
+            stepHandler.postDelayed(this, 1000); // 1초마다 갱신
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,193 +70,198 @@ public class Check extends AppCompatActivity {
         setContentView(R.layout.check);
 
         calendarView = findViewById(R.id.calendarView);
-        queue = Volley.newRequestQueue(this);
-        setFullMonthView();
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
-        // ✅ 1. FitnessOptions 구성
-        fitnessOptions = FitnessOptions.builder()
-                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                .build();
-
-        // ✅ 2. GoogleSignInOptions 명시적으로 설정 + Fit 권한 요청 포함
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestScopes(new com.google.android.gms.common.api.Scope("https://www.googleapis.com/auth/fitness.activity.read"))
-                .build();
-
-        // ✅ 3. GoogleSignIn 계정 획득
-        GoogleSignInAccount account = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
-        Log.d("CheckActivity", "account = " + account);
-        Log.d("CheckActivity", "hasPermissions = " + GoogleSignIn.hasPermissions(account, fitnessOptions));
-
-
-        // ✅ 4. 권한 확인 및 요청
-        if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
-            Log.d(TAG, "Google Fit 권한 없음 → 요청 중");
-            GoogleSignIn.requestPermissions(
-                    this,
-                    1001,
-                    account,
-                    fitnessOptions
-            );
-        } else {
-            Log.d(TAG, "Google Fit 권한 있음 → 걸음수 요청 시작");
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACTIVITY_RECOGNITION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION},
-                            2001);  // requestCode는 자유
-                } else {
-                    getTodayStepCountAndPost(); // 권한 있으면 실행
-                }
-            } else {
-                getTodayStepCountAndPost(); // Android 9 이하면 바로 실행
-            }
-
+        if (stepSensor == null) {
+            Toast.makeText(this, "걸음 수 센서를 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
         }
-    }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACTIVITY_RECOGNITION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION},
+                        PERMISSION_REQUEST_ACTIVITY_RECOGNITION);
+            }
+        }
+
+        setFullMonthView();
+        displayStepsFromLocal();
+        // fetchStepsFromServer();
+        scheduleDailyUpload();
+
+        findViewById(R.id.home).setOnClickListener(v -> {
+            Intent intent = new Intent(Check.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        findViewById(R.id.mypage).setOnClickListener(v -> {
+            Intent intent = new Intent(Check.this, Mypage.class);
+            startActivity(intent);
+            finish();
+        });
+
+        findViewById(R.id.back_button).setOnClickListener(v -> onBackPressed());
+    }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1001) {
-            if (resultCode == RESULT_OK) {
-                getTodayStepCountAndPost(); // 사용자가 동의했을 경우
-            } else {
-                Toast.makeText(this, "Google Fit 권한이 필요합니다", Toast.LENGTH_SHORT).show();
-            }
+    protected void onResume() {
+        super.onResume();
+        if (stepSensor != null) {
+            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI);
         }
+        stepHandler.post(stepUpdater);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+        stepHandler.removeCallbacks(stepUpdater);
+    }
 
     private void setFullMonthView() {
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.add(Calendar.MONTH, -2);
         CalendarDay min = CalendarDay.from(cal);
-        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 2);
         CalendarDay max = CalendarDay.from(cal);
-
         calendarView.state().edit().setMinimumDate(min).setMaximumDate(max).commit();
     }
 
-    private int extractMemberIdFromJWT() {
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        String token = prefs.getString("jwtToken", null);
-        if (token == null) return -1;
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            int currentSensorValue = (int) event.values[0];
 
-        try {
-            Log.d("JWT", "Raw token: " + token);
-            String[] parts = token.split("\\.");
-            byte[] payload = Base64.decode(parts[1], Base64.URL_SAFE);
-            String json = new String(payload, StandardCharsets.UTF_8);
-            JSONObject obj = new JSONObject(json);
-            Log.d("JWT", "Decoded payload: " + json);  // 이거 꼭 찍어봐야 함
-            return obj.getInt("memberId");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
+            if (previousSensorValue == 0) {
+                previousSensorValue = currentSensorValue;
+                return;
+            }
+
+            int stepDiff = currentSensorValue - previousSensorValue;
+            if (stepDiff > 0) {
+                saveStepsToLocal(stepDiff);
+            }
+
+            previousSensorValue = currentSensorValue;
         }
-
     }
 
-    private void getTodayStepCountAndPost() {
-        Calendar end = Calendar.getInstance();
-        Calendar start = Calendar.getInstance();
-        start.set(Calendar.HOUR_OF_DAY, 0);
-        start.set(Calendar.MINUTE, 0);
-        start.set(Calendar.SECOND, 0);
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-        DataReadRequest readRequest = new DataReadRequest.Builder()
-                .aggregate(DataType.TYPE_STEP_COUNT_DELTA)
-                .setTimeRange(start.getTimeInMillis(), end.getTimeInMillis(), TimeUnit.MILLISECONDS)
-                .bucketByTime(1, TimeUnit.DAYS)
-                .build();
+    private void saveStepsToLocal(int stepDiff) {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+        int savedSteps = prefs.getInt(today, 0);
+        int totalSteps = savedSteps + stepDiff;
+        prefs.edit().putInt(today, totalSteps).apply();
+        Log.d("StepTracker", "누적 저장 - 날짜: " + today + ", 기존: " + savedSteps + ", 추가: " + stepDiff + ", 총합: " + totalSteps);
+    }
 
-        Fitness.getHistoryClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .readData(readRequest)
-                .addOnSuccessListener(response -> {
-                    int steps = 0;
+    private void displayStepsFromLocal() {
+        SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+        Map<String, ?> allEntries = prefs.getAll();
+        calendarView.removeDecorators();
 
-                    if (!response.getBuckets().isEmpty()) {
-                        List<DataSet> dataSets = response.getBuckets().get(0).getDataSets();
-                        if (!dataSets.isEmpty()) {
-                            List<DataPoint> dataPoints = dataSets.get(0).getDataPoints();
-                            if (!dataPoints.isEmpty()) {
-                                steps = dataPoints.get(0).getValue(Field.FIELD_STEPS).asInt();
-                            }
+        List<DayViewDecorator> decorators = new ArrayList<>();
+
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            String dateStr = entry.getKey();
+            if (dateStr.equals("initialSensorSteps") || dateStr.equals("총합")) continue;
+
+            try {
+                int steps = (int) entry.getValue();
+                LocalDate date = LocalDate.parse(dateStr);
+                CalendarDay day = CalendarDay.from(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+                decorators.add(new StepDecorator(day, steps));
+            } catch (Exception e) {
+                Log.e("StepCalendar", "날짜 파싱 오류: " + dateStr);
+            }
+        }
+
+        for (DayViewDecorator decorator : decorators) {
+            calendarView.addDecorator(decorator);
+        }
+
+        calendarView.invalidateDecorators();
+    }
+
+    private void fetchStepsFromServer() {
+        SharedPreferences userPrefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = userPrefs.getString("jwtToken", null);
+        int memberId = extractMemberIdFromJWT(token);
+
+        if (memberId == -1) return;
+
+        String url = "http://15.165.92.121:8080/pedometers/" + memberId;
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                response -> {
+                    SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            JSONObject obj = response.getJSONObject(i);
+                            String date = obj.getString("recordDate").substring(0, 10);
+                            int steps = obj.getInt("steps");
+                            editor.putInt(date, steps);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
-
-                    postStepsToServer(steps);
-                })
-
-                .addOnFailureListener(e -> {
-                    e.printStackTrace();
-                    Toast.makeText(this, "걸음 수 측정 실패", Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    private void postStepsToServer(int steps) {
-        int memberId = extractMemberIdFromJWT();
-        if (memberId == -1) {
-            Toast.makeText(this, "로그인 정보 없음", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String url = "http://15.165.92.121:8080/pedometers";
-
-        JSONObject memberObj = new JSONObject();
-        JSONObject pedometerObj = new JSONObject();
-        try {
-            memberObj.put("memberId", memberId);
-            pedometerObj.put("pedometerId", 0);
-            pedometerObj.put("steps", steps);
-            pedometerObj.put("recordDate", Instant.now().toString());
-            pedometerObj.put("member", memberObj);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST, url, pedometerObj,
-                response -> handlePedometerResponse(new JSONArray().put(response)),
-                error -> Log.e(TAG, "Post failed: " + error.toString())
+                    editor.apply();
+                    displayStepsFromLocal();
+                },
+                error -> Log.e("StepTracker", "서버로부터 데이터 받기 실패: " + error.toString())
         );
 
         queue.add(request);
     }
 
-    private void handlePedometerResponse(JSONArray response) {
+    private void scheduleDailyUpload() {
+        Intent intent = new Intent(this, StepUploadReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent);
+    }
+
+    public static int extractMemberIdFromJWT(String token) {
         try {
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject item = response.getJSONObject(i);
-                int steps = item.getInt("steps");
-                String recordDate = item.getString("recordDate");
-
-                LocalDate date = Instant.parse(recordDate)
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
-
-                CalendarDay day = CalendarDay.from(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
-                calendarView.addDecorator(new StepDecorator(day, steps, this));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            String[] parts = token.split("\\.");
+            byte[] payload = Base64.decode(parts[1], Base64.URL_SAFE);
+            String json = new String(payload, StandardCharsets.UTF_8);
+            JSONObject obj = new JSONObject(json);
+            return obj.getInt("memberId");
+        } catch (Exception e) {
+            return -1;
         }
     }
 
     public static class StepDecorator implements DayViewDecorator {
         private final CalendarDay date;
         private final int steps;
-        private final Context context;
 
-        public StepDecorator(CalendarDay date, int steps, Context context) {
+        public StepDecorator(CalendarDay date, int steps) {
             this.date = date;
             this.steps = steps;
-            this.context = context;
         }
 
         @Override
@@ -261,47 +271,73 @@ public class Check extends AppCompatActivity {
 
         @Override
         public void decorate(DayViewFacade view) {
-            view.addSpan(new StepTextSpan(context, steps));
+            view.addSpan(new StepTextSpan(steps)); // 걸음 수 0이라도 모두 표시
         }
+
     }
 
-    public static class StepTextSpan extends android.text.style.ReplacementSpan {
+    public static class StepTextSpan implements android.text.style.LineBackgroundSpan {
         private final int steps;
-        private final Context context;
+        private final Paint paint;
 
-        public StepTextSpan(Context context, int steps) {
+        public StepTextSpan(int steps) {
             this.steps = steps;
-            this.context = context;
+            this.paint = new Paint();
+            paint.setColor(Color.RED); // 강조 색상으로
+            paint.setTextSize(24f);    // 적절한 크기
+            paint.setAntiAlias(true);
+            paint.setTextAlign(Paint.Align.CENTER);
+            paint.setFakeBoldText(true);
         }
 
         @Override
-        public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
-            return (int) paint.measureText(text, start, end);
-        }
-
-        @Override
-        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end,
-                         float x, int top, int y, int bottom, @NonNull Paint paint) {
-            paint.setColor(Color.BLACK);
-            paint.setTextSize(40f);
-            canvas.drawText(text, start, end, x, y, paint);
-            paint.setTextSize(24f);
-            paint.setColor(Color.parseColor("#FF9861"));
-            canvas.drawText(steps + "걸음", x, y + 30, paint);
+        public void drawBackground(Canvas canvas, Paint paint, int left, int right, int top, int baseline, int bottom,
+                                   CharSequence text, int start, int end, int lineNumber) {
+            float x = (left + right) / 2f;
+            float y = (top + bottom) / 2f + 10f;
+            canvas.drawText(String.valueOf(steps), x, y, this.paint);
         }
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == 2001) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getTodayStepCountAndPost();
-            } else {
-                Toast.makeText(this, "걸음 수 인식 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+
+    public static class StepUploadReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            SharedPreferences prefs = context.getSharedPreferences("StepPrefs", Context.MODE_PRIVATE);
+            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            int steps = prefs.getInt(today, 0);
+
+            SharedPreferences userPrefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+            String token = userPrefs.getString("jwtToken", null);
+            int memberId = extractMemberIdFromJWT(token);
+
+            JSONObject body = new JSONObject();
+            try {
+                body.put("memberId", memberId);
+                body.put("steps", steps);
+                body.put("recordDate", today + "T00:00:00Z");
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
+            RequestQueue queue = Volley.newRequestQueue(context);
+            StringRequest request = new StringRequest(Request.Method.POST, "http://15.165.92.121:8080/pedometers",
+                    response -> Log.d("StepUpload", "Success: " + response),
+                    error -> Log.e("StepUpload", "Failed: " + error.toString())) {
+                @Override
+                public byte[] getBody() {
+                    return body.toString().getBytes(StandardCharsets.UTF_8);
+                }
+
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new java.util.HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    if (token != null) headers.put("Authorization", "Bearer " + token);
+                    return headers;
+                }
+            };
+            queue.add(request);
         }
     }
-
-}
+} // 클래스 끝

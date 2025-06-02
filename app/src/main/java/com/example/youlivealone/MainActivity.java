@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,14 +31,26 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int TIME_INTERVAL = 1500; // 뒤로가기 버튼을 누른 시간 간격 (1.5초)
-    private long mBackPressedTime; // 뒤로가기 버튼을 누른 시간을 저장할 변수
-    private static final int PERMISSION_REQUEST_CODE = 1; // 권한 요청 코드
+    private static final int TIME_INTERVAL = 1500;
+    private long mBackPressedTime;
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
     private ActivityMainBinding mBinding;
     private Handler sliderHandler = new Handler();
+    private TextView stepView;
+    private final Handler stepHandler = new Handler();
+    private final Runnable stepUpdater = new Runnable() {
+        @Override
+        public void run() {
+            updateStepTextView();
+            stepHandler.postDelayed(this, 1000); // 1초마다 갱신
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +58,9 @@ public class MainActivity extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        // 알림 권한 요청
         requestNotificationPermission();
-
-        // 매일 알림 설정 (예: 오후 7시 44분)
         setDailyNotification(this, 8, 0);
 
-
-        // 버튼 작동 코드들
         mBinding.notice.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Notice.class);
             startActivity(intent);
@@ -87,11 +96,31 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-
         mBinding.mypage.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Mypage.class);
             startActivity(intent);
         });
+
+        stepView = findViewById(R.id.today_steps);
+        updateStepTextView();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(this, StepTrackingService.class));
+        } else {
+            startService(new Intent(this, StepTrackingService.class));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        stepHandler.post(stepUpdater);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stepHandler.removeCallbacks(stepUpdater);
     }
 
     private void requestNotificationPermission() {
@@ -130,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         mBackPressedTime = currentTime;
     }
 
-
     public static void setDailyNotification(Context context, int hour, int minute) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -148,6 +176,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-}
+    private void updateStepTextView() {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+        int steps = prefs.getInt(today, 0);
+        stepView.setText("오늘 걸음 수: " + steps);
+    }
+}  // MainActivity 끝
