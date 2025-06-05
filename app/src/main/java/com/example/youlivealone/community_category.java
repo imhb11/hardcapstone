@@ -237,7 +237,7 @@ public class community_category extends AppCompatActivity {
                                 int id = post.getInt("categoryId");
                                 String title = post.getString("title");
                                 String content = post.getString("content");
-                                hotPosts.add(new Post(postId, id, title, content));
+                                //hotPosts.add(new Post(postId, id, title, content));
                             }
 
                             hotAdapter.notifyDataSetChanged();
@@ -275,7 +275,7 @@ public class community_category extends AppCompatActivity {
                                 int id = post.getInt("categoryId");
                                 String title = post.getString("title");
                                 String content = post.getString("content");
-                                postItems.add(new Post(postId, id, title, content));
+                                //postItems.add(new Post(postId, id, title, content));
                             }
 
                             postAdapter.notifyDataSetChanged();

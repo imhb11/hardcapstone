@@ -87,34 +87,35 @@
 
     <!-- Popular Button -->
 
-    <Button
-        android:id="@+id/latest_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="최신순"
-        app:layout_constraintEnd_toStartOf="@id/popular_button"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="146dp" />
-
     <!-- ScrollView for Posts -->
 
     <!-- Bottom Navigation -->
     <Button
+        android:id="@+id/latest_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="최신순"
+        app:layout_constraintEnd_toStartOf="@id/popular_button"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
+    <Button
         android:id="@+id/popular_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="인기순"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/latest_button"
-        tools:layout_editor_absoluteY="146dp" />
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
     <ListView
         android:id="@+id/community_post_list"
-        android:layout_width="314dp"
-        android:layout_height="472dp"
-        android:background="@drawable/border"
+        android:layout_width="352dp"
+        android:layout_height="534dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"

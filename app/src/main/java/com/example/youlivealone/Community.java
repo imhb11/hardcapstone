@@ -46,7 +46,7 @@ public class Community extends AppCompatActivity {
 
 
         //버튼 작동코드들
-        findViewById(R.id.check).setOnClickListener(v -> {
+        findViewById(R.id.foots).setOnClickListener(v -> {
             Intent intent = new Intent(Community.this, Check.class);
             startActivity(intent);
         });
@@ -56,10 +56,6 @@ public class Community extends AppCompatActivity {
             startActivity(intent);
         });
 
-        findViewById(R.id.chat).setOnClickListener(v -> {
-            Intent intent = new Intent(Community.this, Chat.class);
-            startActivity(intent);
-        });
         findViewById(R.id.mypage).setOnClickListener(v -> {
             Intent intent = new Intent(Community.this, Mypage.class);
             startActivity(intent);
@@ -124,7 +120,7 @@ public class Community extends AppCompatActivity {
                             editor.apply();
                         }
 
-                        Intent intent = new Intent(Community.this, community_category.class);
+                        Intent intent = new Intent(Community.this, MessageBoard.class);
                         // 각 버튼에 맞는 데이터를 인텐트에 추가
                         intent.putExtra("buttonId", categoryId);
                         startActivity(intent);
