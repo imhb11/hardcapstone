@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -66,7 +67,7 @@ public class Chatbot extends AppCompatActivity {
 
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("message", message);
+            jsonBody.put("question", message);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -89,7 +90,14 @@ public class Chatbot extends AppCompatActivity {
                     chatMessages.add(new ChatMessage("bot", "오류: " + error.toString()));
                     chatAdapter.notifyItemInserted(chatMessages.size() - 1);
                 }
+
         );
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000, // timeout in milliseconds (10초)
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
 
         requestQueue.add(jsonObjectRequest);
     }

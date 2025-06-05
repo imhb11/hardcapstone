@@ -1,19 +1,33 @@
 package com.example.youlivealone;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -21,160 +35,233 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
-import java.util.HashMap;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-public class Check extends AppCompatActivity {
+public class Check extends AppCompatActivity implements SensorEventListener {
 
     private MaterialCalendarView calendarView;
-    private SharedPreferences sharedPreferences;
-    private String jwtToken;
-    private RequestQueue requestQueue;
+    private SensorManager sensorManager;
+    private Sensor stepSensor;
+    private int previousSensorValue = 0;
+    private static final int PERMISSION_REQUEST_ACTIVITY_RECOGNITION = 1001;
+    private final Handler stepHandler = new Handler();
+    private final Runnable stepUpdater = new Runnable() {
+        @Override
+        public void run() {
+            displayStepsFromLocal();
+            stepHandler.postDelayed(this, 1000); // 1초마다 갱신
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check);
+
         calendarView = findViewById(R.id.calendarView);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
-        // SharedPreferences에서 JWT 토큰 및 저장된 기분 데이터 가져오기
-        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        jwtToken = sharedPreferences.getString("jwtToken", null);
+        if (stepSensor == null) {
+            Toast.makeText(this, "걸음 수 센서를 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
+        }
 
-        // 저장된 기분 데이터를 불러와 캘린더에 표시
-        loadMoodsFromPreferences();
-
-        // Volley 요청 큐 초기화
-        requestQueue = Volley.newRequestQueue(this);
-
-        // 오늘 날짜 가져오기
-        CalendarDay today = CalendarDay.today();
-
-        // 날짜 선택 리스너 설정 (오늘 날짜 클릭 시 출석 체크 요청 전송)
-        calendarView.setOnDateChangedListener((widget, date, selected) -> {
-            if (date.equals(today)) {
-                showMoodSelectionDialog(today); // 기분 선택 다이얼로그 표시
-            } else {
-                Toast.makeText(Check.this, "오늘 날짜만 선택 가능합니다.", Toast.LENGTH_SHORT).show();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACTIVITY_RECOGNITION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION},
+                        PERMISSION_REQUEST_ACTIVITY_RECOGNITION);
             }
+        }
+
+        setFullMonthView();
+        displayStepsFromLocal();
+        // fetchStepsFromServer();
+        scheduleDailyUpload();
+
+        findViewById(R.id.home).setOnClickListener(v -> {
+            Intent intent = new Intent(Check.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         });
 
-        // 하단 버튼 기능 설정
-        findViewById(R.id.check).setOnClickListener(v -> startActivity(new Intent(Check.this, Check.class)));
-        findViewById(R.id.home).setOnClickListener(v -> startActivity(new Intent(Check.this, MainActivity.class)));
-        findViewById(R.id.chat).setOnClickListener(v -> startActivity(new Intent(Check.this, Chat.class)));
-        findViewById(R.id.mypage).setOnClickListener(v -> startActivity(new Intent(Check.this, Mypage.class)));
+        findViewById(R.id.mypage).setOnClickListener(v -> {
+            Intent intent = new Intent(Check.this, Mypage.class);
+            startActivity(intent);
+            finish();
+        });
+
+        findViewById(R.id.back_button).setOnClickListener(v -> onBackPressed());
     }
 
-    // 기분 선택 다이얼로그를 표시하는 메서드
-    private void showMoodSelectionDialog(CalendarDay date) {
-        String[] moods = {"😀 행복", "😐 보통", "😢 슬픔", "😠 화남"};
-        int[] moodImages = {R.drawable.happy, R.drawable.just, R.drawable.sad, R.drawable.angry};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(Check.this);
-        builder.setTitle("오늘의 기분을 선택하세요")
-                .setItems(moods, (dialog, which) -> {
-                    // 선택한 기분을 SharedPreferences에 저장
-                    saveMoodToPreferences(date, moods[which], moodImages[which]);
-
-                    // 선택한 기분 이미지로 데코레이터 설정
-                    calendarView.addDecorator(new MoodDecorator(date, moodImages[which]));
-
-                    // 서버에 출석 체크 요청 보내기
-                    sendAttendanceCheckRequest();
-                });
-        builder.create().show();
-    }
-
-    // 출석 체크 요청을 보내는 메서드
-    private void sendAttendanceCheckRequest() {
-        String url = "http://15.165.92.121:8080/attendance/check";
-
-        // JWT 토큰이 존재하는지 확인
-        if (jwtToken == null) {
-            Toast.makeText(Check.this, "로그인 후 출석 체크가 가능합니다.", Toast.LENGTH_SHORT).show();
-            return;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (stepSensor != null) {
+            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI);
         }
-
-        // Volley를 사용하여 POST 요청을 보내기
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                response -> {
-                    // 서버 응답 성공 시 처리
-                    Toast.makeText(Check.this, "출석 체크 완료: " + response, Toast.LENGTH_SHORT).show();
-                    Log.d("CheckActivity", "출석 체크 서버 응답: " + response);
-
-                },
-                error -> {
-                    // 오류 발생 시 처리
-                    Log.e("CheckActivity", "출석 체크 실패: " + error.getMessage());
-                    if (error.networkResponse != null) {
-                        int statusCode = error.networkResponse.statusCode;
-                        String errorMsg = new String(error.networkResponse.data);
-                        Log.e("CheckActivity", "상태 코드: " + statusCode);
-                        Log.e("CheckActivity", "서버 응답 메시지: " + errorMsg);
-                    }
-                    Toast.makeText(Check.this, "출석 체크 실패", Toast.LENGTH_SHORT).show();
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + jwtToken); // JWT 토큰을 헤더에 추가
-                return headers;
-            }
-
-            @Override
-            public byte[] getBody() {
-                return null;
-            }
-        };
-
-        // 요청을 요청 큐에 추가
-        requestQueue.add(stringRequest);
+        stepHandler.post(stepUpdater);
     }
 
-    // 감정 데이터를 SharedPreferences에 저장하는 메서드
-    private void saveMoodToPreferences(CalendarDay date, String mood, int moodImageRes) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String key = date.getYear() + "_" + date.getMonth() + "_" + date.getDay();
-        editor.putString(key + "_mood", mood);
-        editor.putInt(key + "_moodImageRes", moodImageRes);
-        editor.apply();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+        stepHandler.removeCallbacks(stepUpdater);
     }
 
-    // SharedPreferences에서 감정 데이터를 불러와 캘린더에 표시하는 메서드
-    private void loadMoodsFromPreferences() {
-        Map<String, ?> allEntries = sharedPreferences.getAll();
+    private void setFullMonthView() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -2);
+        CalendarDay min = CalendarDay.from(cal);
+        cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 2);
+        CalendarDay max = CalendarDay.from(cal);
+        calendarView.state().edit().setMinimumDate(min).setMaximumDate(max).commit();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            int currentSensorValue = (int) event.values[0];
+
+            if (previousSensorValue == 0) {
+                previousSensorValue = currentSensorValue;
+                return;
+            }
+
+            int stepDiff = currentSensorValue - previousSensorValue;
+            if (stepDiff > 0) {
+                saveStepsToLocal(stepDiff);
+            }
+
+            previousSensorValue = currentSensorValue;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+    private void saveStepsToLocal(int stepDiff) {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+        int savedSteps = prefs.getInt(today, 0);
+        int totalSteps = savedSteps + stepDiff;
+        prefs.edit().putInt(today, totalSteps).apply();
+        Log.d("StepTracker", "누적 저장 - 날짜: " + today + ", 기존: " + savedSteps + ", 추가: " + stepDiff + ", 총합: " + totalSteps);
+    }
+
+    private void displayStepsFromLocal() {
+        SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+        Map<String, ?> allEntries = prefs.getAll();
+        calendarView.removeDecorators();
+
+        List<DayViewDecorator> decorators = new ArrayList<>();
+
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            String key = entry.getKey();
-            String[] dateParts = key.split("_");
+            String dateStr = entry.getKey();
+            if (dateStr.equals("initialSensorSteps") || dateStr.equals("총합")) continue;
 
-            if (dateParts.length == 3) { // 키가 날짜 형식인 경우만 처리
-                try {
-                    int year = Integer.parseInt(dateParts[0]);
-                    int month = Integer.parseInt(dateParts[1]);
-                    int day = Integer.parseInt(dateParts[2]);
-                    CalendarDay date = CalendarDay.from(year, month, day);
-                    int moodImageRes = sharedPreferences.getInt(key + "_moodImageRes", 0);
-
-                    // 데코레이터 추가하여 캘린더에 감정 이미지 표시
-                    if (moodImageRes != 0) {
-                        calendarView.addDecorator(new MoodDecorator(date, moodImageRes));
-                    }
-                } catch (NumberFormatException e) {
-                    Log.e("CheckActivity", "잘못된 날짜 형식 키: " + key);
-                }
+            try {
+                int steps = (int) entry.getValue();
+                LocalDate date = LocalDate.parse(dateStr);
+                CalendarDay day = CalendarDay.from(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+                decorators.add(new StepDecorator(day, steps));
+            } catch (Exception e) {
+                Log.e("StepCalendar", "날짜 파싱 오류: " + dateStr);
             }
+        }
+
+        for (DayViewDecorator decorator : decorators) {
+            calendarView.addDecorator(decorator);
+        }
+
+        calendarView.invalidateDecorators();
+    }
+
+    private void fetchStepsFromServer() {
+        SharedPreferences userPrefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = userPrefs.getString("jwtToken", null);
+        int memberId = extractMemberIdFromJWT(token);
+
+        if (memberId == -1) return;
+
+        String url = "http://15.165.92.121:8080/pedometers/" + memberId;
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                response -> {
+                    SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            JSONObject obj = response.getJSONObject(i);
+                            String date = obj.getString("recordDate").substring(0, 10);
+                            int steps = obj.getInt("steps");
+                            editor.putInt(date, steps);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    editor.apply();
+                    displayStepsFromLocal();
+                },
+                error -> Log.e("StepTracker", "서버로부터 데이터 받기 실패: " + error.toString())
+        );
+
+        queue.add(request);
+    }
+
+    private void scheduleDailyUpload() {
+        Intent intent = new Intent(this, StepUploadReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent);
+    }
+
+    public static int extractMemberIdFromJWT(String token) {
+        try {
+            String[] parts = token.split("\\.");
+            byte[] payload = Base64.decode(parts[1], Base64.URL_SAFE);
+            String json = new String(payload, StandardCharsets.UTF_8);
+            JSONObject obj = new JSONObject(json);
+            return obj.getInt("memberId");
+        } catch (Exception e) {
+            return -1;
         }
     }
 
-    // 감정 이미지를 추가하는 MoodDecorator 클래스
-    private class MoodDecorator implements DayViewDecorator {
+    public static class StepDecorator implements DayViewDecorator {
         private final CalendarDay date;
-        private final int moodImageRes;
+        private final int steps;
 
-        public MoodDecorator(CalendarDay date, int moodImageRes) {
+        public StepDecorator(CalendarDay date, int steps) {
             this.date = date;
-            this.moodImageRes = moodImageRes;
+            this.steps = steps;
         }
 
         @Override
@@ -184,8 +271,73 @@ public class Check extends AppCompatActivity {
 
         @Override
         public void decorate(DayViewFacade view) {
-            Drawable drawable = ContextCompat.getDrawable(Check.this, moodImageRes);
-            view.setBackgroundDrawable(drawable);
+            view.addSpan(new StepTextSpan(steps)); // 걸음 수 0이라도 모두 표시
+        }
+
+    }
+
+    public static class StepTextSpan implements android.text.style.LineBackgroundSpan {
+        private final int steps;
+        private final Paint paint;
+
+        public StepTextSpan(int steps) {
+            this.steps = steps;
+            this.paint = new Paint();
+            paint.setColor(Color.RED); // 강조 색상으로
+            paint.setTextSize(24f);    // 적절한 크기
+            paint.setAntiAlias(true);
+            paint.setTextAlign(Paint.Align.CENTER);
+            paint.setFakeBoldText(true);
+        }
+
+        @Override
+        public void drawBackground(Canvas canvas, Paint paint, int left, int right, int top, int baseline, int bottom,
+                                   CharSequence text, int start, int end, int lineNumber) {
+            float x = (left + right) / 2f;
+            float y = (top + bottom) / 2f + 10f;
+            canvas.drawText(String.valueOf(steps), x, y, this.paint);
         }
     }
-}
+
+
+    public static class StepUploadReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            SharedPreferences prefs = context.getSharedPreferences("StepPrefs", Context.MODE_PRIVATE);
+            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            int steps = prefs.getInt(today, 0);
+
+            SharedPreferences userPrefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+            String token = userPrefs.getString("jwtToken", null);
+            int memberId = extractMemberIdFromJWT(token);
+
+            JSONObject body = new JSONObject();
+            try {
+                body.put("memberId", memberId);
+                body.put("steps", steps);
+                body.put("recordDate", today + "T00:00:00Z");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            RequestQueue queue = Volley.newRequestQueue(context);
+            StringRequest request = new StringRequest(Request.Method.POST, "http://15.165.92.121:8080/pedometers",
+                    response -> Log.d("StepUpload", "Success: " + response),
+                    error -> Log.e("StepUpload", "Failed: " + error.toString())) {
+                @Override
+                public byte[] getBody() {
+                    return body.toString().getBytes(StandardCharsets.UTF_8);
+                }
+
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new java.util.HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    if (token != null) headers.put("Authorization", "Bearer " + token);
+                    return headers;
+                }
+            };
+            queue.add(request);
+        }
+    }
+} // 클래스 끝

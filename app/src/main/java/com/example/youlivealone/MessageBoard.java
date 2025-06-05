@@ -1,15 +1,20 @@
 package com.example.youlivealone;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,9 +55,8 @@ public class MessageBoard extends AppCompatActivity {
         setContentView(R.layout.messageboard); // messageboard.xml 레이아웃 파일 참조
 
         // UI 요소를 findViewById로 연결
-        searchBar = findViewById(R.id.search_bar);
-        searchButton = findViewById(R.id.search_button);
-        additionalButton = findViewById(R.id.additional_button);
+        searchBar = findViewById(R.id.editTextSearch);
+        additionalButton = findViewById(R.id.categoryadd);
         latestButton = findViewById(R.id.latest_button);
         popularButton = findViewById(R.id.popular_button);
 //        scrollView = findViewById(R.id.community_post_list);
@@ -90,24 +94,37 @@ public class MessageBoard extends AppCompatActivity {
 
 
         // 검색 버튼 클릭 이벤트 처리
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onClick(View v) {
-                String query = searchBar.getText().toString();
-                if (!query.isEmpty()) {
-                    try {
-                        String encodedQuery = URLEncoder.encode(query, "UTF-8");
-                        String searchUrl = SEARCH_URL.replace("{title}", encodedQuery);
-                        loadPostList(searchUrl);
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                        Toast.makeText(MessageBoard.this, "인코딩 오류 발생", Toast.LENGTH_SHORT).show();
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                                && event.getAction() == KeyEvent.ACTION_DOWN)) {
+
+                    String query = searchBar.getText().toString();
+                    if (!query.isEmpty()) {
+                        try {
+                            String encodedQuery = URLEncoder.encode(query, "UTF-8");
+                            String searchUrl = SEARCH_URL.replace("{title}", encodedQuery);
+                            loadPostList(searchUrl);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                            Toast.makeText(MessageBoard.this, "인코딩 오류 발생", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(MessageBoard.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(MessageBoard.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();
+
+                    // 키보드 내리기
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+
+                    return true;
                 }
+                return false;
             }
         });
+
 
         // 추가 버튼 클릭 이벤트 처리
         additionalButton.setOnClickListener(new View.OnClickListener() {

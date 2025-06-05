@@ -6,10 +6,16 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.gridlayout.widget.GridLayout;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapView;
@@ -76,6 +82,28 @@ public class Meeting extends AppCompatActivity implements OnMapReadyCallback {
             Intent intent = new Intent(Meeting.this, MainActivity.class);
             startActivity(intent);
         });
+
+        //searchIcon 색깔바꿈
+        EditText editTextSearch = findViewById(R.id.editTextSearch);
+        ImageView searchIcon = findViewById(R.id.searchIcon);
+        LinearLayout searchView = findViewById(R.id.searchView);
+
+
+// 포커스 상태에 따라 아이콘 색상 변경
+        editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // EditText가 선택되었을 때 (커서 생김)
+                searchIcon.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.active_icon_color));
+                searchView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.searchbackground_focused));
+
+            } else {
+                // 포커스가 사라졌을 때
+                searchIcon.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.inactive_icon_color));
+                searchView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.searchbackground));
+
+            }
+        });
+
 
 
         //카테고리 버튼 클릭 시

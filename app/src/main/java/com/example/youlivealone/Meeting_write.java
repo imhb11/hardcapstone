@@ -47,7 +47,7 @@ public class Meeting_write extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.meeting_write);
+        setContentView(R.layout.meeting_write_1p);
 
         uploadButton = findViewById(R.id.meeting_upload);
         titleInput = findViewById(R.id.meeting_write_title);
