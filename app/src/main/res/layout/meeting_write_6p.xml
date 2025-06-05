@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:fontFamily="@font/pretendard"
+        android:text="마지막으로 모임을 자세하게"
+        android:textColor="#4D3005"
+        android:textSize="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/pretendard"
+        android:text="안내하는 글을 써 주세요"
+        android:textColor="#4D3005"
+        android:textSize="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <LinearLayout
+        android:id="@+id/searchView"
+        android:layout_width="377dp"
+        android:layout_height="317.52dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/meeting_write6p_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.352"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+
+        <EditText
+            android:id="@+id/editTextSearch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="모임을 자세하게 알려주세요. "
+            android:inputType="textMultiLine"
+            android:paddingStart="8dp"
+            android:textColor="#000000"
+            android:textColorHint="#C0B8AE" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.937"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:srcCompat="@drawable/meeting_write_currentlevel1" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="368dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Step 1 -->
+        <TextView
+            android:id="@+id/step1"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/step_circle_filled"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@android:color/white" />
+
+        <!-- Dotted line or view -->
+
+        <!-- Step 2 -->
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/dotted_line" />
+
+        <TextView
+            android:id="@+id/step2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/step_circle_filled"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@android:color/white" />
+        <!-- Dotted line or view -->
+
+        <!-- Step 2 -->
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/dotted_line" />
+
+        <TextView
+            android:id="@+id/step3"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/step_circle_filled"
+            android:gravity="center"
+            android:text="3"
+            android:textColor="@android:color/white" />
+        <!-- Dotted line or view -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/dotted_line" />
+
+        <!-- Step 2 -->
+        <TextView
+            android:id="@+id/step4"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/step_circle_filled"
+            android:gravity="center"
+            android:text="4"
+            android:textColor="@android:color/white" />
+        <!-- Dotted line or view -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/dotted_line" />
+
+        <!-- Step 2 -->
+        <TextView
+            android:id="@+id/step5"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/step_circle_filled"
+            android:gravity="center"
+            android:text="5"
+            android:textColor="@android:color/white" />
+        <!-- Dotted line or view -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/dotted_line" />
+
+        <!-- Step 2 -->
+        <TextView
+            android:id="@+id/step6"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/step_circle_filled"
+            android:gravity="center"
+            android:text="6"
+            android:textColor="@android:color/white" />
+
+        <!-- 나머지 단계도 반복 -->
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/pretendard"
+        android:text="소모임 만들기"
+        android:textSize="21dp"
+        app:layout_constraintStart_toEndOf="@+id/meeting_back1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/meeting_back1"
+        android:layout_width="34dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/meeting_backbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="28dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="188dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/alarm" />
+
+    <ImageButton
+        android:id="@+id/uploadbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="44dp"
+        android:background="@drawable/meeting_upload"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
+    <ImageButton
+        android:id="@+id/cancelbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="18dp"
+        android:background="@drawable/meeting_writecancel"
+        app:layout_constraintEnd_toStartOf="@+id/uploadbtn"
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

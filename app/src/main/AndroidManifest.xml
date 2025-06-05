@@ -58,6 +58,13 @@
         <activity android:name=".RealtimeChatActivity" />
         <activity android:name=".ChatRoomActivity" />
 
+        <activity android:name=".MeetingWrite1p"/>
+        <activity android:name=".MeetingWrite2p"/>
+        <activity android:name=".MeetingWrite3p"/>
+        <activity android:name=".MeetingWrite4p"/>
+        <activity android:name=".MeetingWrite5p"/>
+        <activity android:name=".MeetingWrite6p"/>
+
 
 
         <activity android:name=".Login"

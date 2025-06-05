@@ -1,0 +1,49 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/imageViewMeeting"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/banner" />
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="음식 제목 1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_below="@id/imageViewMeeting"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="모임 소개입니다"
+            android:layout_below="@id/textViewTitle"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/textViewMemberCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12명"
+            android:layout_below="@id/textViewDescription"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="4dp" />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

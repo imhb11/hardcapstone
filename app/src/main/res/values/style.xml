@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- res/values/styles.xml -->
+    <style name="CustomCalendarHeader">
+        <item name="android:textSize">25sp</item>
+        <item name="android:fontFamily">@font/pretendard</item>
+    </style>
+
+</resources>

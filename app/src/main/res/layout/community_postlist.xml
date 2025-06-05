@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@drawable/community_list_background"
+    android:gravity="center_vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/postTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="글 제목입니다"
+        android:textColor="#4D3005"
+        android:textSize="14sp"
+        android:layout_weight="1"/>
+
+    <ImageView
+        android:id="@+id/heartIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/community_heart" />
+
+    <TextView
+        android:id="@+id/likeCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="13"
+        android:textColor="#4D3005"
+        android:layout_marginStart="6dp"/>
+</LinearLayout>
