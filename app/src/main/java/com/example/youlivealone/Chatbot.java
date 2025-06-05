@@ -1,5 +1,6 @@
 package com.example.youlivealone;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,6 +49,21 @@ public class Chatbot extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
 
         sendButton.setOnClickListener(v -> sendMessage());
+
+        findViewById(R.id.foots).setOnClickListener(v -> {
+            Intent intent = new Intent(Chatbot.this, Check.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.home).setOnClickListener(v -> {
+            Intent intent = new Intent(Chatbot.this, MainActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.mypage).setOnClickListener(v -> {
+            Intent intent = new Intent(Chatbot.this, Mypage.class);
+            startActivity(intent);
+        });
     }
 
     private void sendMessage() {

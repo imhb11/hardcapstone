@@ -1,5 +1,5 @@
 {
-  "installationFolder": "C:\\appproject\\sangsangcompany\\a\\sangsang-front-ccccc\\OpenCV\\build\\intermediates\\prefab_package\\release\\prefab",
+  "installationFolder": "C:\\Users\\user\\AndroidStudioProjects\\hardcapstone\\OpenCV\\build\\intermediates\\prefab_package\\release\\prefab",
   "gradlePath": ":OpenCV",
   "packageInfo": {
     "packageName": "OpenCV",
@@ -8,7 +8,7 @@
     "modules": [
       {
         "moduleName": "opencv_jni_shared",
-        "moduleHeaders": "C:\\appproject\\sangsangcompany\\a\\sangsang-front-ccccc\\OpenCV\\native\\jni\\include",
+        "moduleHeaders": "C:\\Users\\user\\AndroidStudioProjects\\hardcapstone\\OpenCV\\native\\jni\\include",
         "moduleExportLibraries": [],
         "abis": []
       }

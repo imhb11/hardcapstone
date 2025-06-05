@@ -26,12 +26,8 @@ public class Purchase extends AppCompatActivity {
 
         //버튼 작동코드들
 
-        findViewById(R.id.map).setOnClickListener(v -> {
-            Intent intent = new Intent(Purchase.this, Map.class);
-            startActivity(intent);
-        });
 
-        findViewById(R.id.check).setOnClickListener(v -> {
+        findViewById(R.id.foots).setOnClickListener(v -> {
             Intent intent = new Intent(Purchase.this, Check.class);
             startActivity(intent);
         });
@@ -41,10 +37,6 @@ public class Purchase extends AppCompatActivity {
             startActivity(intent);
         });
 
-        findViewById(R.id.chat).setOnClickListener(v -> {
-            Intent intent = new Intent(Purchase.this, Chat.class);
-            startActivity(intent);
-        });
         findViewById(R.id.mypage).setOnClickListener(v -> {
             Intent intent = new Intent(Purchase.this, Mypage.class);
             startActivity(intent);

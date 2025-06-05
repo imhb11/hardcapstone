@@ -40,7 +40,7 @@
         android:layout_width="165dp"
         android:layout_height="160dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="36dp"
+        android:layout_marginEnd="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/communityButton"
         app:srcCompat="@drawable/main_counsel_button" />
@@ -55,7 +55,7 @@
         app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/purchaseButton"
-        app:srcCompat="@drawable/main_purchase_button" />
+        app:srcCompat="@drawable/main_meeting_button" />
 
     <ImageView
         android:id="@+id/purchaseButton"
@@ -67,7 +67,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/main_meeting_button" />
+        app:srcCompat="@drawable/main_purchase_button" />
 
     <ImageButton
         android:id="@+id/notice"
@@ -108,6 +108,44 @@
 
     <!-- 이미지 슬라이드 뷰 -->
 
+    <ImageView
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="129dp"
+        android:layout_marginBottom="72dp"
+        app:layout_constraintBottom_toBottomOf="@+id/materialToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/main_banner" />
+
+    <ImageView
+        android:id="@+id/chart2"
+        android:layout_width="match_parent"
+        android:layout_height="69dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/counselButton"
+        android:background="@drawable/main_popularcard" />
+
+    <ImageView
+        android:id="@+id/chart1"
+        android:layout_width="match_parent"
+        android:layout_height="69dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="36dp"
+        app:layout_constraintBottom_toTopOf="@+id/banner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.421"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chart2"
+        app:layout_constraintVertical_bias="0.541"
+        android:background="@drawable/main_popularcard" />
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/materialToolbar"
         android:layout_width="418dp"
@@ -119,46 +157,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
-
-
-    <ImageView
-        android:id="@+id/banner"
-        android:layout_width="408dp"
-        android:layout_height="129dp"
-        android:layout_marginBottom="72dp"
-        app:layout_constraintBottom_toBottomOf="@+id/materialToolbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/main_banner" />
-
-    <ImageView
-        android:id="@+id/chart2"
-        android:layout_width="327dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.75"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/counselButton"
-        app:srcCompat="@drawable/main_popularcard" />
-
-    <ImageView
-        android:id="@+id/chart1"
-        android:layout_width="330dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="36dp"
-        app:layout_constraintBottom_toTopOf="@+id/banner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart2"
-        app:layout_constraintVertical_bias="0.854"
-        app:srcCompat="@drawable/main_popularcard" />
 
     <ImageButton
         android:id="@+id/home"

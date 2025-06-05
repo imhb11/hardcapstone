@@ -56,7 +56,7 @@ public class Meeting extends AppCompatActivity implements OnMapReadyCallback {
 
 
         //하단바 버튼 작동코드들
-        findViewById(R.id.check).setOnClickListener(v -> {
+        findViewById(R.id.foots).setOnClickListener(v -> {
             Intent intent = new Intent(Meeting.this, Check.class);
             startActivity(intent);
         });
@@ -66,10 +66,6 @@ public class Meeting extends AppCompatActivity implements OnMapReadyCallback {
             startActivity(intent);
         });
 
-        findViewById(R.id.chat).setOnClickListener(v -> {
-            Intent intent = new Intent(Meeting.this, Chat.class);
-            startActivity(intent);
-        });
         findViewById(R.id.mypage).setOnClickListener(v -> {
             Intent intent = new Intent(Meeting.this, Mypage.class);
             startActivity(intent);

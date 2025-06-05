@@ -67,9 +67,8 @@ public class Mypage extends AppCompatActivity {
         fetchPoints();
 
         // 네비게이션 버튼들 설정
-        findViewById(R.id.check).setOnClickListener(v -> startActivity(new Intent(Mypage.this, Check.class)));
+        findViewById(R.id.foots).setOnClickListener(v -> startActivity(new Intent(Mypage.this, Check.class)));
         findViewById(R.id.home).setOnClickListener(v -> startActivity(new Intent(Mypage.this, MainActivity.class)));
-        findViewById(R.id.chat).setOnClickListener(v -> startActivity(new Intent(Mypage.this, Chat.class)));
         findViewById(R.id.mypage).setOnClickListener(v -> startActivity(new Intent(Mypage.this, Mypage.class)));
     }
 

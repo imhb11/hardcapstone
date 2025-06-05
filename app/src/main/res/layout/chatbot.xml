@@ -43,59 +43,51 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 툴바를 화면 아래쪽에 고정 -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/materialToolbar"
-        android:layout_width="0dp"
-        android:layout_height="78dp"
-        android:background="#BAA681"
+        android:layout_width="418dp"
+        android:layout_height="75dp"
+        android:background="@color/white"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- 툴바 안에 들어갈 ImageButton들 -->
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
         android:id="@+id/home"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/home"
-        app:layout_constraintEnd_toStartOf="@+id/check"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="@+id/materialToolbar"
-        app:layout_constraintTop_toBottomOf="@+id/messageLayout" />
-
-    <ImageButton
-        android:id="@+id/check"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="52dp"
-        android:background="@drawable/check"
-        app:layout_constraintEnd_toStartOf="@+id/chat"
-        app:layout_constraintTop_toBottomOf="@+id/messageLayout" />
-
-    <ImageButton
-        android:id="@+id/chat"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/chat"
-        app:layout_constraintEnd_toStartOf="@+id/mypage"
-        app:layout_constraintTop_toBottomOf="@+id/messageLayout" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar"
+        app:layout_constraintVertical_bias="0.631"
+        android:background="@drawable/navigation_home_button"/>
 
     <ImageButton
         android:id="@+id/mypage"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="60dp"
-        android:background="@drawable/mypagebutton"
-        app:layout_constraintEnd_toEndOf="@+id/materialToolbar"
-        app:layout_constraintTop_toBottomOf="@+id/messageLayout" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar"
+        app:layout_constraintVertical_bias="0.631"
+        android:background="@drawable/navigation_mypage_button"/>
+
+    <ImageView
+        android:id="@+id/foots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/navigation_foot_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mypage"
+        app:layout_constraintHorizontal_bias="0.518"
+        app:layout_constraintStart_toEndOf="@+id/home"
+        app:layout_constraintTop_toTopOf="@+id/materialToolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
