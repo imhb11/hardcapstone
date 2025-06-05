@@ -35,6 +35,7 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import org.checkerframework.checker.units.qual.C;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,7 +89,6 @@ public class Check extends AppCompatActivity implements SensorEventListener {
 
         setFullMonthView();
         displayStepsFromLocal();
-        // fetchStepsFromServer();
         scheduleDailyUpload();
 
         findViewById(R.id.home).setOnClickListener(v -> {
@@ -164,24 +164,48 @@ public class Check extends AppCompatActivity implements SensorEventListener {
     }
 
     private void displayStepsFromLocal() {
-        SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
-        Map<String, ?> allEntries = prefs.getAll();
         calendarView.removeDecorators();
-
         List<DayViewDecorator> decorators = new ArrayList<>();
 
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            String dateStr = entry.getKey();
-            if (dateStr.equals("initialSensorSteps") || dateStr.equals("총합")) continue;
+        Calendar startCal = Calendar.getInstance();
+        startCal.add(Calendar.MONTH, -2);
 
-            try {
-                int steps = (int) entry.getValue();
-                LocalDate date = LocalDate.parse(dateStr);
-                CalendarDay day = CalendarDay.from(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
-                decorators.add(new StepDecorator(day, steps));
-            } catch (Exception e) {
-                Log.e("StepCalendar", "날짜 파싱 오류: " + dateStr);
+        Calendar endCal = Calendar.getInstance();
+        endCal.add(Calendar.MONTH, 2);
+
+        Calendar today = Calendar.getInstance();
+
+        while (!startCal.after(endCal)) {
+            int year = startCal.get(Calendar.YEAR);
+            int month = startCal.get(Calendar.MONTH); // 0-based
+            int day = startCal.get(Calendar.DAY_OF_MONTH);
+
+            boolean isBeforeOrToday =
+                    (year < today.get(Calendar.YEAR)) ||
+                            (year == today.get(Calendar.YEAR) && month < today.get(Calendar.MONTH)) ||
+                            (year == today.get(Calendar.YEAR) && month == today.get(Calendar.MONTH) && day < today.get(Calendar.DAY_OF_MONTH));
+
+            if (isBeforeOrToday) {
+                CalendarDay calendarDay = CalendarDay.from(year, month, day);
+                decorators.add(new StepDecorator(calendarDay, 0));
             }
+
+            boolean isToday =
+                    (year == today.get(Calendar.YEAR)) &&
+                            (month == today.get(Calendar.MONTH)) &&
+                            (day == today.get(Calendar.DAY_OF_MONTH));
+
+            if (isToday) {
+                String todayStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                SharedPreferences prefs = getSharedPreferences("StepPrefs", MODE_PRIVATE);
+                int todaySteps = prefs.getInt(todayStr, 0);
+
+                CalendarDay calendarDay = CalendarDay.from(year, month, day);
+                decorators.add(new StepDecorator(calendarDay, todaySteps));
+            }
+
+
+            startCal.add(Calendar.DAY_OF_MONTH, 1);
         }
 
         for (DayViewDecorator decorator : decorators) {
@@ -283,8 +307,8 @@ public class Check extends AppCompatActivity implements SensorEventListener {
         public StepTextSpan(int steps) {
             this.steps = steps;
             this.paint = new Paint();
-            paint.setColor(Color.RED); // 강조 색상으로
-            paint.setTextSize(24f);    // 적절한 크기
+            paint.setColor(Color.BLACK); // 강조 색상으로
+            paint.setTextSize(40f);    // 적절한 크기
             paint.setAntiAlias(true);
             paint.setTextAlign(Paint.Align.CENTER);
             paint.setFakeBoldText(true);
@@ -294,7 +318,7 @@ public class Check extends AppCompatActivity implements SensorEventListener {
         public void drawBackground(Canvas canvas, Paint paint, int left, int right, int top, int baseline, int bottom,
                                    CharSequence text, int start, int end, int lineNumber) {
             float x = (left + right) / 2f;
-            float y = (top + bottom) / 2f + 10f;
+            float y = (top + bottom) / 2f + 65f;
             canvas.drawText(String.valueOf(steps), x, y, this.paint);
         }
     }

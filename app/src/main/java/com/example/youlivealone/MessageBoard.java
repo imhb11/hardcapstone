@@ -37,7 +37,7 @@ import java.util.List;
 
 public class MessageBoard extends AppCompatActivity {
     private ListView newlist;
-    private ArrayAdapter<Post> newAdapter;
+    private PostListAdapter newAdapter;
     private List<Post> newItems = new ArrayList<>();
     private static final String NEW_URL = "http://15.165.92.121:8080/categories/{categoryId}/posts";
     private static final String SEARCH_URL = "http://15.165.92.121:8080/search?query={title}";
@@ -45,7 +45,7 @@ public class MessageBoard extends AppCompatActivity {
 
 
     private EditText searchBar;
-    private ImageButton searchButton, additionalButton;
+    private ImageButton additionalButton;
     private Button latestButton, popularButton;
 //    private Listview listview;
 
@@ -63,9 +63,9 @@ public class MessageBoard extends AppCompatActivity {
 
 
         newlist = findViewById(R.id.community_post_list);
-        newAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, newItems);
-        newlist.setAdapter(newAdapter);
-        // SharedPreferences에서 카테고리 ID 가져오기
+//        newAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, newItems);
+        this.newAdapter = new PostListAdapter(this, new ArrayList<>());
+        newlist.setAdapter(newAdapter);        // SharedPreferences에서 카테고리 ID 가져오기
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         int categoryId = sharedPreferences.getInt("categoryId", -1); // 기본값 -1
 
@@ -89,8 +89,6 @@ public class MessageBoard extends AppCompatActivity {
             intent.putExtra("selectedPost", selectedPost);
             startActivity(intent);
         });
-
-
 
 
         // 검색 버튼 클릭 이벤트 처리
@@ -136,12 +134,21 @@ public class MessageBoard extends AppCompatActivity {
             }
         });
 
-        // 최신순 버튼 클릭 이벤트 처리
+        //최신순 버튼 해결
         latestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 최신순 정렬 기능 구현
+                SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                int categoryId = sharedPreferences.getInt("categoryId", -1);
+
+                if (categoryId != -1) {
+                    String latestPostsUrl = NEW_URL.replace("{categoryId}", String.valueOf(categoryId));
+                    loadPostList(latestPostsUrl); // 최신 포스트 리스트 로드
+                } else {
+                    Toast.makeText(MessageBoard.this, "카테고리 ID를 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
+                }
             }
+
         });
 
         // 인기순 버튼 클릭 이벤트 처리
@@ -154,11 +161,12 @@ public class MessageBoard extends AppCompatActivity {
 
                 if (categoryId != -1) {
                     // URL에 카테고리 ID 적용
-                    String popularPostsUrl = POPULAR_URL.replace("{categoryId}", String.valueOf(categoryId));
-                    loadPostList(popularPostsUrl); // 인기 포스트 리스트를 로드
+//                    String popularPostsUrl = POPULAR_URL.replace("{categoryId}", String.valueOf(categoryId));
+                    loadPostList(POPULAR_URL); // 인기 포스트 리스트를 로드
                 } else {
                     Toast.makeText(MessageBoard.this, "카테고리 ID를 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
-                }            }
+                }
+            }
         });
     }
     private void loadPostList(String url) {
@@ -170,36 +178,38 @@ public class MessageBoard extends AppCompatActivity {
                 Request.Method.GET,
                 url,
                 null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.d("Response", response.toString());
-                        try {
-                            for (int i = 0; i < response.length(); i++) {
-                                JSONObject post = response.getJSONObject(i);
-                                String postId = post.getString("id"); // postId 가져오기
-                                int id = post.getInt("categoryId");
-                                String title = post.getString("title");
-                                String content = post.getString("content");
-                                newItems.add(new Post(postId, id, title, content));
-                            }
+                response -> {
+                    Log.d("POST_RESPONSE", response.toString());
 
-                            newAdapter.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    List<Post> postList = new ArrayList<>();
+                    try {
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject obj = response.getJSONObject(i);
+                            Post post = new Post(
+                                    obj.optString("id", ""),
+                                    obj.optInt("userId", -1),
+                                    obj.optString("title", "제목 없음"),
+                                    obj.optString("content", ""),
+                                    obj.optInt("categoryId", 0),
+                                    obj.optInt("likes", 0)
+                            );
+                            postList.add(post);
                         }
+
+                        if (newAdapter != null) {
+                            newAdapter.clear();
+                            newAdapter.addAll(postList);
+                            newAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.e("Adapter", "newAdapter가 null입니다.");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MessageBoard.this, "Error loading posts", Toast.LENGTH_SHORT).show();
-                    }
-                }
+                error -> Log.e("Volley", "Error: " + error.getMessage())
         );
 
         queue.add(jsonArrayRequest);
     }
-
-
 }
